@@ -1,34 +1,42 @@
 @using System.ComponentModel.DataAnnotations
-@using System.Reflection
-@model Data.DTOs.Order.FilterOrderDto
+@* بعد *@
+@model UI.Services.Base.FilterOrderDto
 @{
     ViewData["Title"] = "مدیریت سفارش‌ها";
 
-    string StateLabel(Data.DTOs.Order.FilterOrderState state) =>
-        state.GetType().GetField(state.ToString())
-            ?.GetCustomAttribute<DisplayAttribute>()?.Name ?? state.ToString();
+    string StateLabel(FilterOrderState state) => state switch
+    {
+        FilterOrderState.All      => "همه",
+        FilterOrderState.Open     => "ثبت شده",
+        FilterOrderState.Paid     => "پرداخت شده",
+        FilterOrderState.Sent     => "ارسال شده",
+        FilterOrderState.Canceled => "لغو شده",
+        FilterOrderState.Returned => "مرجوع شده",
+        FilterOrderState.Pending  => "در حال پردازش",
+        _ => state.ToString()
+    };
 
-    string OrderStateLabel(Data.Entities.Order.OrderState state) =>
-        state switch {
-            Data.Entities.Order.OrderState.Open     => "ثبت شده",
-            Data.Entities.Order.OrderState.Paid     => "پرداخت شده",
-            Data.Entities.Order.OrderState.Pending  => "در حال پردازش",
-            Data.Entities.Order.OrderState.Sent     => "ارسال شده",
-            Data.Entities.Order.OrderState.Canceled => "لغو شده",
-            Data.Entities.Order.OrderState.Returned => "مرجوع شده",
-            _ => state.ToString()
-        };
+    string OrderStateLabel(OrderState state) => state switch
+    {
+        OrderState.Open     => "ثبت شده",
+        OrderState.Paid     => "پرداخت شده",
+        OrderState.Pending  => "در حال پردازش",
+        OrderState.Sent     => "ارسال شده",
+        OrderState.Canceled => "لغو شده",
+        OrderState.Returned => "مرجوع شده",
+        _ => state.ToString()
+    };
 
-    string StateBadge(Data.Entities.Order.OrderState state) =>
-        state switch {
-            Data.Entities.Order.OrderState.Open     => "bg-secondary",
-            Data.Entities.Order.OrderState.Paid     => "bg-success",
-            Data.Entities.Order.OrderState.Pending  => "bg-warning text-dark",
-            Data.Entities.Order.OrderState.Sent     => "bg-primary",
-            Data.Entities.Order.OrderState.Canceled => "bg-danger",
-            Data.Entities.Order.OrderState.Returned => "bg-info text-dark",
-            _ => "bg-secondary"
-        };
+    string StateBadge(OrderState state) => state switch
+    {
+        OrderState.Open     => "bg-secondary",
+        OrderState.Paid     => "bg-success",
+        OrderState.Pending  => "bg-warning text-dark",
+        OrderState.Sent     => "bg-primary",
+        OrderState.Canceled => "bg-danger",
+        OrderState.Returned => "bg-info text-dark",
+        _ => "bg-secondary"
+    };
 }
 @* @section AdminHeaderSection
 {
@@ -76,7 +84,7 @@
         <div class="col-md-3">
             <label class="form-label fw-bold font-13">وضعیت سفارش</label>
             <select asp-for="FilterOrderState" class="form-select form-select-sm">
-                @foreach (var state in Enum.GetValues<Data.DTOs.Order.FilterOrderState>())
+                @foreach (var state in Enum.GetValues<FilterOrderState>())
                 {
                     <option value="@state">@StateLabel(state)</option>
                 }

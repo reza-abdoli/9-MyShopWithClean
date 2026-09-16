@@ -1,7 +1,4 @@
-@using Application.Extensions
-@using Data.DTOs.Product
-@using Data.Entities
-@model Data.DTOs.Product.ProductDetailDto
+@model UI.Services.Base.ProductDetailDto
 @{
     ViewData["Title"] = "جزئیات محصول — " + Model.Title;
 }
@@ -27,7 +24,7 @@
         @* تصویر اصلی *@
         <div style="flex-shrink:0">
             <div class="img-thumb" style="width:110px;height:110px;border-radius:10px">
-                <img src="@(PathExtension.ProductImageImage + Model.MainImageName)"
+                <img src="@(ImageUrls.ProductImage(Model.MainImageName))"
                      alt="@Model.Title"
                      style="width:100%;height:100%;object-fit:cover;border-radius:10px">
             </div>
@@ -289,7 +286,7 @@
                     @foreach (var g in Model.ProductGalleries.OrderBy(x => x.Order))
                     {
                         <div style="position:relative">
-                            <img src="@(PathExtension.ProductGalleryThumb + g.ImageName)"
+                            <img src="@(ImageUrls.ProductGalleryThumb(g.ImageName))"
                                  alt=""
                                  style="width:90px;height:90px;object-fit:cover;
                                         border-radius:8px;border:1px solid var(--border)">

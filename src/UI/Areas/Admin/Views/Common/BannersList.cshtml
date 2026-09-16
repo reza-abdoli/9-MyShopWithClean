@@ -1,6 +1,4 @@
-@using Application.Extensions
-@using Data.Entities.Common
-@model List<Data.Entities.Common.Banner>
+@model List<UI.Services.Base.BannerDto>
 @{
     ViewData["Title"] = "مدیریت بنرها";
 }
@@ -35,7 +33,7 @@
                         <td>@(i++)</td>
                         <td>
                             <div class="img-thumb" style="width:100px;height:50px;border-radius:6px">
-                                <img src="@(PathExtension.BannerThumb + banner.ImageName)"
+                                <img src="@ImageUrls.BannerThumb(banner.ImageName)"
                                      alt="@banner.Title"
                                      style="width:100%;height:100%;object-fit:cover">
                             </div>

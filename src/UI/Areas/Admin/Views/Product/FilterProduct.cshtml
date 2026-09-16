@@ -1,7 +1,4 @@
-@using Application.Extensions
-@using Data.DTOs.Product
-@using Data.Entities
-@model Data.DTOs.Product.FilterProductDto
+@model UI.Services.Base.FilterProductDto
 @{
     ViewData["Title"] = "مدیریت محصولات";
     var brands     = ViewData["Brands"]     as List<Brand>           ?? new();
@@ -106,7 +103,7 @@
                             <td>@(i++)</td>
                             <td>
                                 <div class="img-thumb">
-                                    <img src="@(PathExtension.ProductImageThumb + product.MainImageName)"
+                                    <img src="@(ImageUrls.ProductImageThumb(product.MainImageName))"
                                          alt="@product.Title"
                                          style="width:100%;height:100%;object-fit:cover">
                                 </div>

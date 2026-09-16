@@ -1,5 +1,4 @@
-@using Data.Entities
-@model Data.DTOs.Product.CreateProductDto
+@model UI.Models.CreateProductViewModel
 @{
     var brands     = ViewData["Brands"]     as List<Brand>              ?? new List<Brand>();
     var categories = ViewData["Categories"] as List<ProductCategory>    ?? new List<ProductCategory>();

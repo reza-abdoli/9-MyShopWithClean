@@ -1,32 +1,30 @@
-@using Application.Extensions
-@model Data.DTOs.Order.OrderDetailDto
+@model UI.Services.Base.OrderDetailDto
 @{
     ViewData["Title"] = $"جزئیات سفارش #{Model.Id}";
 
-    string OrderStateLabel(Data.Entities.Order.OrderState state) =>
-        state switch {
-            Data.Entities.Order.OrderState.Open     => "ثبت شده",
-            Data.Entities.Order.OrderState.Paid     => "پرداخت شده",
-            Data.Entities.Order.OrderState.Pending  => "در حال پردازش",
-            Data.Entities.Order.OrderState.Sent     => "ارسال شده",
-            Data.Entities.Order.OrderState.Canceled => "لغو شده",
-            Data.Entities.Order.OrderState.Returned => "مرجوع شده",
-            _ => state.ToString()
-        };
+    string OrderStateLabel(OrderState state) => state switch
+    {
+        OrderState.Open => "ثبت شده",
+        OrderState.Paid => "پرداخت شده",
+        OrderState.Pending => "در حال پردازش",
+        OrderState.Sent => "ارسال شده",
+        OrderState.Canceled => "لغو شده",
+        OrderState.Returned => "مرجوع شده",
+        _ => state.ToString()
+    };
 
-    string StateBadge(Data.Entities.Order.OrderState state) =>
-        state switch {
-            Data.Entities.Order.OrderState.Open     => "bg-secondary",
-            Data.Entities.Order.OrderState.Paid     => "bg-success",
-            Data.Entities.Order.OrderState.Pending  => "bg-warning text-dark",
-            Data.Entities.Order.OrderState.Sent     => "bg-primary",
-            Data.Entities.Order.OrderState.Canceled => "bg-danger",
-            Data.Entities.Order.OrderState.Returned => "bg-info text-dark",
-            _ => "bg-secondary"
-        };
-
-    var allStates = ViewData["States"] as Data.Entities.Order.OrderState[] 
-                    ?? Enum.GetValues(typeof(Data.Entities.Order.OrderState)).Cast<Data.Entities.Order.OrderState>().ToArray();
+    string StateBadge(OrderState state) => state switch
+    {
+        OrderState.Open => "bg-secondary",
+        OrderState.Paid => "bg-success",
+        OrderState.Pending => "bg-warning text-dark",
+        OrderState.Sent => "bg-primary",
+        OrderState.Canceled => "bg-danger",
+        OrderState.Returned => "bg-info text-dark",
+        _ => "bg-secondary"
+    };
+    var allStates = ViewData["States"] as IEnumerable<OrderState>
+                    ?? Enum.GetValues<OrderState>();
 }
 
 @* ─── هدر ─── *@
@@ -73,10 +71,8 @@
 
                         @if (product != null && !string.IsNullOrEmpty(product.MainImageName))
                         {
-                            <img src="@(PathExtension.ProductImageThumb + product.MainImageName)"
-                                 alt="@product.Title"
-                                 class="rounded-3 border flex-shrink-0"
-                                 style="width:64px;height:64px;object-fit:cover">
+                            <img src="@ImageUrls.ProductImageThumb(product.MainImageName)" alt="@product.Title"
+                                 class="rounded-3 border flex-shrink-0" style="width:64px;height:64px;object-fit:cover">
                         }
 
                         <div class="flex-grow-1 min-w-0">

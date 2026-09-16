@@ -1,5 +1,4 @@
-@using Application.Extensions
-@model Data.DTOs.Product.FilterBrandDto
+@model UI.Services.Base.FilterBrandDto
 @{
     ViewData["Title"] = "مدیریت برند‌ها";
 }
@@ -60,7 +59,7 @@
                         <td>@(i++)</td>
                         <td>
                             <div class="img-thumb">
-                                <img src="@(PathExtension.BrandThumb + brand.ImageName)"
+                                <img src="@(ImageUrls.BrandThumb(brand.ImageName))"
                                      alt="@brand.Title"
                                      style="width:100%;height:100%;object-fit:cover">
                             </div>

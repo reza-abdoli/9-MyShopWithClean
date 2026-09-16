@@ -1,6 +1,4 @@
-@using Application.Extensions
-@using Data.Entities
-@model Data.DTOs.Category.FilterCategoryDto
+@model UI.Services.Base.FilterCategoryDto
 @{
     ViewData["Title"] = "مدیریت دسته‌بندی‌ها";
     var parentCategories = (List<ProductCategory>) ViewData["ParentCategory"];
@@ -80,7 +78,7 @@
                             <td>@(i++)</td>
                             <td>
                                 <div class="img-thumb">
-                                    <img src="@(PathExtension.CategoryThumb + cat.MainImage)"
+                                    <img src="@(ImageUrls.CategoryThumb(cat.MainImage))"
                                          alt="@cat.Title"
                                          style="width:100%;height:100%;object-fit:cover">
                                 </div>
