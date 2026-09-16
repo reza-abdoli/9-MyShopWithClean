@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <partial name="_SiteMetaTags" />
+    <partial name="_SiteHeaderRef" />
+    @RenderSection("SiteHeaderSection", false)
+    <title>@ViewData["Title"]</title>
+</head>
+
+<body>
+    @await Component.InvokeAsync("SiteHeader")
+    @RenderBody()
+
+
+    <partial name="_SiteFooter" />
+    <partial name="_SiteFooterRef" />
+    <partial name="_SiteMessages" />
+    @RenderSection("SiteFooterSection", false)
+
+</body>
+
+</html>

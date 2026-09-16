@@ -1,0 +1,210 @@
+@using System.Security.Claims
+@model UI.Services.Base.SubmitOrderDetailDto
+
+@{
+    var addUrl    = Url.Action("AddProductToCart",        "Order", new { area = "User" });
+    var changeUrl = Url.Action("ChangeOrderDetailCount",  "Order", new { area = "User" });
+    var infoUrl   = Url.Action("CartVariantInfo",         "Order", new { area = "User" });
+}
+
+@Html.AntiForgeryToken()
+
+<input type="hidden" id="cart-product-id"  value="@Model.ProductId">
+<input type="hidden" id="cart-add-url"     value="@addUrl">
+<input type="hidden" id="cart-change-url"  value="@changeUrl">
+<input type="hidden" id="cart-info-url"    value="@infoUrl">
+<input type="hidden" id="ProductVariantId" value="@Model.ProductVariantId">
+
+@if (User.Identity!.IsAuthenticated)
+{
+    @* حالت ۱: دکمه افزودن *@
+    <div id="add-to-cart-wrap" class="d-none">
+        <button type="button" id="addToCartBtn" class="btn btn-danger w-100 mb-2"
+                onclick="cartAdd()">
+            <i class="bi bi-cart-plus me-1"></i> افزودن به سبد خرید
+        </button>
+    </div>
+
+    @* حالت ۲: کانتر تعداد *@
+    <div id="qty-counter-wrap" class="d-none mb-2">
+        <div class="d-flex align-items-center justify-content-between
+                    border rounded-3 px-3 py-2 bg-light">
+            <button type="button" class="btn btn-sm btn-outline-secondary px-3"
+                    onclick="cartChange(-1)">−</button>
+            <span id="cart-qty-display" class="fw-bold fs-5">1</span>
+            <button type="button" class="btn btn-sm btn-outline-secondary px-3"
+                    onclick="cartChange(1)">+</button>
+        </div>
+    </div>
+
+    @* حالت ۳: ناموجود *@
+    <div id="out-of-stock-wrap" class="d-none mb-2">
+        <button class="btn btn-secondary w-100 mb-2" disabled>
+            <i class="bi bi-slash-circle me-1"></i> ناموجود
+        </button>
+    </div>
+
+    @* پیام خطا *@
+    <div id="cart-error-msg" class="alert alert-warning font-13 py-2 mt-2 d-none" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        <span id="cart-error-text"></span>
+    </div>
+}
+else
+{
+    <a asp-area="" asp-controller="Account" asp-action="Login"
+       class="btn btn-danger w-100 mb-2">
+        <i class="bi bi-cart-plus me-1"></i> افزودن به سبد خرید
+    </a>
+}
+
+<script>
+(function () {
+    let _orderDetailId = null;
+    let _count = 0;
+
+    const token = () =>
+        document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+
+    async function post(url, body) {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': token()
+            },
+            body: new URLSearchParams(body).toString()
+        });
+        return res.json();
+    }
+
+    function showError(msg) {
+        const box  = document.getElementById('cart-error-msg');
+        const text = document.getElementById('cart-error-text');
+        if (!box || !text) return;
+        text.textContent = msg;
+        box.classList.remove('d-none');
+        setTimeout(() => box.classList.add('d-none'), 4000);
+    }
+
+    function hideError() {
+        document.getElementById('cart-error-msg')?.classList.add('d-none');
+    }
+
+    // ─── سه حالت نمایش ───
+    function showAddButton()   {
+        document.getElementById('add-to-cart-wrap')?.classList.remove('d-none');
+        document.getElementById('qty-counter-wrap')?.classList.add('d-none');
+        document.getElementById('out-of-stock-wrap')?.classList.add('d-none');
+        document.getElementById('price-wrap')?.classList.remove('d-none');
+
+    }
+    function showCounter() {
+        document.getElementById('qty-counter-wrap')?.classList.remove('d-none');
+        document.getElementById('add-to-cart-wrap')?.classList.add('d-none');
+        document.getElementById('out-of-stock-wrap')?.classList.add('d-none');
+        document.getElementById('cart-qty-display').textContent = _count;
+        document.getElementById('price-wrap')?.classList.remove('d-none');
+
+    }
+    function showOutOfStock() {
+        document.getElementById('out-of-stock-wrap')?.classList.remove('d-none');
+        document.getElementById('add-to-cart-wrap')?.classList.add('d-none');
+        document.getElementById('qty-counter-wrap')?.classList.add('d-none');
+        document.getElementById('price-wrap')?.classList.add('d-none');
+
+    }
+
+    // ─── بررسی وضعیت سبد ───
+    // stock: موجودی انبار همین ورینت (از data-stock دکمه سایز)
+    async function checkCartState(variantId, stock) {
+        const infoUrl = document.getElementById('cart-info-url').value;
+        try {
+            const data = await fetch(`${infoUrl}?productVariantId=${variantId}`).then(r => r.json());
+            if (data && data.count > 0) {
+                // توی سبد هست — counter نشون بده
+                _orderDetailId = data.orderDetailId;
+                _count = data.count;
+                showCounter();
+            } else if (stock !== undefined && stock <= 0) {
+                // موجودی انبار صفره — ناموجود نشون بده
+                _orderDetailId = null;
+                _count = 0;
+                showOutOfStock();
+            } else {
+                // نه توی سبده، نه ناموجوده — دکمه افزودن
+                _orderDetailId = null;
+                _count = 0;
+                showAddButton();
+            }
+        } catch {
+            showAddButton();
+        }
+        hideError();
+    }
+
+    // ─── افزودن به سبد ───
+    window.cartAdd = async function () {
+        const productId = document.getElementById('cart-product-id').value;
+        const variantId = document.getElementById('ProductVariantId').value;
+        const addUrl    = document.getElementById('cart-add-url').value;
+
+        const btn = document.getElementById('addToCartBtn');
+        btn.disabled = true;
+        try {
+            const data = await post(addUrl, { ProductId: productId, ProductVariantId: variantId });
+            if (data.success && data.orderDetailId > 0) {
+                _orderDetailId = data.orderDetailId;
+                _count = 1;
+                hideError();
+                showCounter();
+            } else {
+                showError('این محصول در حال حاضر موجود نیست.');
+            }
+        } catch {
+            showError('خطا در ارتباط با سرور. لطفاً دوباره امتحان کنید.');
+        } finally {
+            btn.disabled = false;
+        }
+    };
+
+    // ─── تغییر تعداد ───
+    window.cartChange = async function (delta) {
+        const newCount  = _count + delta;
+        const changeUrl = document.getElementById('cart-change-url').value;
+
+        if (newCount < 1) {
+            await post(changeUrl, { orderDetailId: _orderDetailId, newCount: 0 });
+            _orderDetailId = null;
+            _count = 0;
+            hideError();
+            showAddButton();
+            return;
+        }
+
+        const data = await post(changeUrl, { orderDetailId: _orderDetailId, newCount });
+        if (data.success) {
+            _count = newCount;
+            document.getElementById('cart-qty-display').textContent = _count;
+            hideError();
+        } else {
+            showError(`حداکثر تعداد قابل سفارش ${_count} عدد است.`);
+        }
+    };
+
+    // ─── وقتی رنگ/سایز عوض میشه — stock هم میاد ───
+    window.cartCheckVariant = function (variantId, stock) {
+        checkCartState(variantId, stock);
+    };
+
+    // ─── لود اولیه: stock رو از دکمه سایز فعال می‌خونیم ───
+    const initialVariantId  = document.getElementById('ProductVariantId').value;
+    const initialActiveSizeBtn = document.querySelector('.custom-size-btn.active-size');
+    const initialStock = initialActiveSizeBtn
+        ? parseInt(initialActiveSizeBtn.dataset.stock)
+        : undefined;
+
+    if (initialVariantId) checkCartState(initialVariantId, initialStock);
+
+})();
+</script>
