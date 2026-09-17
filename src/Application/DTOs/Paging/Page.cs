@@ -9,7 +9,13 @@ namespace Application.DTOs.Paging
     {
         public static BasePaging BuildPage(int pageId, int allEntitiesCount, int take, int howManyShowPageAfterAndBefore)
         {
-            var pageCount = Convert.ToInt32(Math.Ceiling(allEntitiesCount / (double)take));
+            if (take <= 0) take = 3; // یا هر مقدار پیش‌فرض منطقی
+
+            if (pageId <= 0) pageId = 1;
+
+            var pageCount = allEntitiesCount <= 0
+                ? 0
+                : (int)Math.Ceiling(allEntitiesCount / (double)take);
 
             return new BasePaging
             {

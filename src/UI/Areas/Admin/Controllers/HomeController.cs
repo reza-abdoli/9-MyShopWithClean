@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace MyMvcApp.Areas.Admin.Controllers
+namespace UI.Areas.Admin.Controllers;
+
+public class HomeController : AdminBaseController
 {
-    public class HomeController : AdminBaseController
-    {
-        public IActionResult Index()
-        {
-            return View();
-        }
-    }
+    public IActionResult Index() => View();
 }

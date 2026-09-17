@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.Entities;
 using Domain.Entities.Common;
 using Domain.Entities.Order;
 using Domain.Entities.Product;
@@ -33,7 +34,21 @@ public class ApplicationDbContext : DbContext
     public DbSet<OrderDetail> OrderDetail { get; set; }
     public DbSet<ProductSell> ProductSell { get; set; }
     public DbSet<PaymentTransaction> PaymentTransaction { get; set; }
-
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedAt = DateTime.UtcNow;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+        return base.SaveChangesAsync(cancellationToken);
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 

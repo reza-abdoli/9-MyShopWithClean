@@ -1,86 +1,84 @@
-using System.Security.Claims;
-using Application.Services.Interface;
-using Data.DTOs.Order;
 using Microsoft.AspNetCore.Mvc;
+using UI.Services.Base;
 
-namespace Presentation.Areas.User.Controllers
+namespace UI.Areas.User.Controllers;
+
+public class OrderController : UserBaseController
 {
-    public class OrderController : UserBaseController
+    private readonly IClient _client;
+
+    public OrderController(IClient client)
     {
-        private readonly IOrderService _orderService;
-        private readonly IUserService _userService;
+        _client = client;
+    }
 
-        public OrderController(IOrderService orderService, IUserService userService)
+    [HttpGet("cart-variant-info")]
+    public async Task<IActionResult> CartVariantInfo(long productVariantId)
+    {
+        try
         {
-            _orderService = orderService;
-            _userService = userService;
+            var info = await _client.CartVariantInfoAsync(productVariantId);
+            return Json(info);
         }
-
-        [HttpGet("cart-variant-info")]
-        public async Task<IActionResult> CartVariantInfo(long productVariantId)
+        catch (ApiException)
         {
-            if (!User.Identity!.IsAuthenticated)
-                return Json(new { count = 0 });
-
-            var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var orderDetail = await _orderService.GetCartItemForVariant(userId, productVariantId);
-
-            if (orderDetail == null)
-                return Json(new { count = 0 });
-
-            return Json(new { orderDetailId = orderDetail.Id, count = orderDetail.Count });
+            return Json(new { count = 0 });
         }
+    }
 
-        [HttpPost("add-product-to-cart")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddProductToCart(SubmitOrderDetailDto dto)
+    [HttpPost("add-product-to-cart")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddProductToCart(SubmitOrderDetailDto dto)
+    {
+        try
         {
-            var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            dto.UserId = userId;
-
-            var orderDetailId = await _orderService.AddProductToOrder(dto);
-
+            var orderDetailId = await _client.CartItemsPOSTAsync(dto);
             return Json(new { success = true, orderDetailId });
         }
-
-
-        [HttpPost("change-order-detail-count")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangeOrderDetailCount(long orderDetailId, int newCount)
+        catch (ApiException)
         {
-            var res = await _orderService.ChangeOrderDetailCount(orderDetailId, newCount);
-            if (res)
-                return Json(new { success = true });
             return Json(new { success = false });
-
         }
+    }
 
-        [HttpGet("cart")]
-        public async Task<IActionResult> Cart()
+    [HttpPost("change-order-detail-count")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangeOrderDetailCount(long orderDetailId, int newCount)
+    {
+        try
         {
-            var order = await _orderService.UserOpenOrderDetail(long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value));
-            return View(order);
+            var success = await _client.CartItemsPUTAsync(orderDetailId, newCount);
+            return Json(new { success });
         }
-
-        [HttpGet("checkout")]
-        public async Task<IActionResult> Checkout()
+        catch (ApiException)
         {
-            var result = await _userService.IsProfileDetailCompleted(long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value));
-            if (!result)
-                return RedirectToAction("EditUserDetail", "Account", new { area = "User", returnToCheckout = true });
-
-
-            var model = await _orderService.UserOpenOrderDetail(long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value));
-            ViewData["User"] = await _userService.GetUserByUsername(User.FindFirst(ClaimTypes.Name)!.Value);
-
-            return View(model);
+            return Json(new { success = false });
         }
+    }
 
-        [HttpGet("paid-orders")]
-        public async Task<IActionResult> PaidOrders()
-        {
-            var orders = await _orderService.GetUserPaidOrders(long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value));
-            return View(orders);
-        }
+    [HttpGet("cart")]
+    public async Task<IActionResult> Cart()
+    {
+        var order = await _client.CartAsync();
+        return View(order);
+    }
+
+    [HttpGet("checkout")]
+    public async Task<IActionResult> Checkout()
+    {
+        var response = await _client.CheckoutAsync();
+
+        if (response.NeedsProfile)
+            return RedirectToAction("EditUserDetail", "Account", new { area = "User", returnToCheckout = true });
+
+        ViewData["User"] = response.User;
+        return View(response.Order);
+    }
+
+    [HttpGet("paid-orders")]
+    public async Task<IActionResult> PaidOrders()
+    {
+        var orders = await _client.PaidAsync();
+        return View(orders.ToList());
     }
 }

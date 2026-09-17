@@ -30,6 +30,8 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 // -------------------- لایه‌های Infrastructure --------------------
+builder.Services.AddMemoryCache();
+
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddFileStorageServices();
 

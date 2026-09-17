@@ -8,8 +8,8 @@ namespace Application.DTOs.Product
 {
     public class FilterSizeDto
     {
-        public string Title { get; set; }
-        public string SizeType { get; set; }
-        public List<ProductSize> Data { get; set; }
+        public string? Title { get; set; }
+        public string? SizeType { get; set; }
+        public List<ProductSize>? Data { get; set; }= new List<ProductSize>();
     }
 }

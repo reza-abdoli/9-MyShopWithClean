@@ -1,24 +1,37 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using UI.Models;
+using UI.Services.Base;
 
 namespace UI.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly IClient _client;
+
+    public HomeController(IClient client)
     {
+        _client = client;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        try
+        {
+            var home = await _client.HomeAsync();
+            ViewData["Banners"] = home.Banners?.ToList() ?? new List<BannerItemDto>();
+            ViewData["Categories"] = home.Categories?.ToList() ?? new List<ProductCategory>();
+            ViewData["Products"] = home.Products?.ToList() ?? new List<ProductItemDto>();
+        }
+        catch (ApiException)
+        {
+            ViewData["Banners"] = new List<BannerItemDto>();
+            ViewData["Categories"] = new List<ProductCategory>();
+            ViewData["Products"] = new List<ProductItemDto>();
+        }
+
         return View();
     }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
+    public IActionResult Error() =>
+        View(new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
 }

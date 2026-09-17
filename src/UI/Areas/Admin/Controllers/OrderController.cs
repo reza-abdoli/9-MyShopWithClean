@@ -1,47 +1,48 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Application.Services.Interface;
-using Data.DTOs.Order;
-using Data.Entities.Order;
 using Microsoft.AspNetCore.Mvc;
-using MyMvcApp.Areas.Admin.Controllers;
+using UI.Services.Base;
 
-namespace Presentation.Areas.Admin.Controllers;
+namespace UI.Areas.Admin.Controllers;
 
 public class OrderController : AdminBaseController
 {
-    private readonly IProductService _productService;
-    private readonly IOrderService _orderService;
-    public OrderController(IProductService productService, IOrderService orderService)
+    private readonly IClient _client;
+
+    public OrderController(IClient client)
     {
-        _productService = productService;
-        _orderService = orderService;
+        _client = client;
     }
 
-        [HttpGet("admin-filter-orders")]
-        public async Task<IActionResult> FilterOrder(FilterOrderDto filter)
+    [HttpGet("admin-filter-orders")]
+    public async Task<IActionResult> FilterOrder(FilterOrderDto filter)
+    {
+        var model = await _client.OrdersAsync(
+            filter.UserId, filter.MinimumPrice, filter.UserName, filter.DestinationCity,
+            filter.TransactionId, filter.PaymentRecordId, filter.FilterOrderState, filter.Data);
+        return View(model);
+    }
+
+    [HttpGet("admin-order-detail-{orderId}")]
+    public async Task<IActionResult> OrderDetail(long orderId)
+    {
+        var response = await _client.Orders2Async(orderId);
+        ViewData["States"] = response.AvailableStates;
+        return View(response.Model);
+    }
+
+    [HttpPost("process-order")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProcessOrder(long orderId, OrderState orderState)
+    {
+        try
         {
-            var model = await _orderService.FilterOrders(filter);
-            return View(model);
+            await _client.StateAsync(orderId, orderState);
+            TempData[SuccessMessage] = SuccessText;
+        }
+        catch (ApiException)
+        {
+            TempData[ErrorMessage] = ErrorText;
         }
 
-        [HttpGet("admin-order-detail-{orderId}")]
-        public async Task<IActionResult> OrderDetail(long orderId)
-        {
-            // get all states for admin to change state of an order base on this options
-            ViewData["States"] = Enum.GetValues<OrderState>();
-            var model = await _orderService.OrderDetail(orderId);
-            return View(model);
-        }
-        [HttpPost("process-order") , ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProcessOrder(long orderId, OrderState orderState)
-        {
-            if (!ModelState.IsValid) 
-                return RedirectToAction("OrderDetail" , new {area = "Admin" , orderId = orderId});
-            await _orderService.ProcessOrder(orderId, orderState);
-            TempData[SuccessMessage] = SuccessText;
-            return RedirectToAction("OrderDetail" , new {area = "Admin" , orderId = orderId});
-        }
+        return RedirectToAction("OrderDetail", new { orderId });
+    }
 }

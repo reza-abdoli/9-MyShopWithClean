@@ -9,10 +9,10 @@ namespace Application.DTOs.Category
     public class FilterCategoryDto
     {
         public long? ParentId { get; set; }
-        public string Title { get; set; }
-        public string Url { get; set; }
+        public string? Title { get; set; }
+        public string? Url { get; set; }
         public FilterCategoryStatus CategoryStatus { get; set; }
-        public List<ProductCategory> Data { get; set; }
+        public List<ProductCategory>? Data { get; set; }
 
         public enum FilterCategoryStatus
         {

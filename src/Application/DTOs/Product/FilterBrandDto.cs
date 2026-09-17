@@ -6,7 +6,7 @@ namespace Application.DTOs.Product;
 
 public class FilterBrandDto
 {
-    public string Title { get; set; }
-    public string Url { get; set; }
-    public List<BrandDto> Data { get; set; }   // به‌جای List<Brand>
+    public string? Title { get; set; }
+    public string? Url { get; set; }
+    public List<BrandDto>? Data { get; set; }   // به‌جای List<Brand>
 }

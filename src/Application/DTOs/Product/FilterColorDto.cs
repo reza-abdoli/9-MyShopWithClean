@@ -8,6 +8,6 @@ namespace Application.DTOs.Product;
 
 public class FilterColorDto
 {
-    public string Title { get; set; }
-    public List<ProductColor> Data { get; set; }
+    public string? Title { get; set; }
+    public List<ProductColor>? Data { get; set; }
 }

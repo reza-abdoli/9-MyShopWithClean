@@ -50,7 +50,7 @@ public class AuthenticateService : IAuthenticateService
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            return new RegistrationResult { Success = true };
+            return new RegistrationResult { Success = true, Role = result.Role };
         }
         catch (ApiException ex) when (ex.StatusCode == 401)
         {

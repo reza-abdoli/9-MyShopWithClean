@@ -10,13 +10,13 @@ namespace Application.DTOs.Order
     {
         public long? UserId { get; set; }
         public int? MinimumPrice { get; set; }
-        public string UserName { get; set; }
-        public string DestinationCity { get; set; }
+        public string? UserName { get; set; }
+        public string? DestinationCity { get; set; }
         // public string Description { get; set; }
         public long? TransactionId { get; set; }
         public long? PaymentRecordId { get; set; }
         public FilterOrderState FilterOrderState { get; set; }
-        public List<Domain.Entities.Order.Order> Data { get; set; }
+        public List<Domain.Entities.Order.Order>? Data { get; set; }
 
     }
     public enum FilterOrderState

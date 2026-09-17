@@ -1,36 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Application.Services.Interface;
-using Data.DTOs;
-using Data.DTOs.Category;
-using Data.DTOs.Product;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using MyMvcApp.Areas.Admin.Controllers;
-using Application.Extensions;
+using UI.Models;
+using UI.Services.Base;
 
-namespace Presentation.Areas.Admin.Controllers;
+namespace UI.Areas.Admin.Controllers;
 
 public class ProductController : AdminBaseController
 {
-    private readonly IProductService _productService;
-    private readonly ICategoryService _categoryService;
-    public ProductController(IProductService productService, ICategoryService categoryService)
+    private readonly IClient _client;
+
+    public ProductController(IClient client)
     {
-        _productService = productService;
-        _categoryService = categoryService;
+        _client = client;
     }
+
     #region Color
 
     [HttpGet("create-color")]
-    public IActionResult CreateColor()
-    {
-        return View();
-    }
-    [HttpPost("create-color"), ValidateAntiForgeryToken]
+    public IActionResult CreateColor() => View();
+
+    [HttpPost("create-color")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateColor(CreateColorDTo dto)
     {
         if (!ModelState.IsValid)
@@ -38,8 +27,8 @@ public class ProductController : AdminBaseController
             TempData[ErrorMessage] = "عنوان یا کد رنگ نباید خالی باشد";
             return View(dto);
         }
-        await _productService.CreateColor(dto);
 
+        await _client.ColorsPOSTAsync(dto);
         TempData[SuccessMessage] = SuccessText;
         return RedirectToAction("FilterColor");
     }
@@ -47,88 +36,104 @@ public class ProductController : AdminBaseController
     [HttpGet("filter-color")]
     public async Task<IActionResult> FilterColor(FilterColorDto dto)
     {
-        var filter = await _productService.FilterColors(dto);
+        var filter = await _client.ColorsGETAsync(dto.Title, dto.Data);
         return View(filter);
     }
 
     #endregion
 
     #region Brand
+
     [HttpGet("create-brand")]
-    public IActionResult CreateBrand()
-    {
-        return View();
-    }
-    [HttpPost("create-brand"), ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateBrand(CreateBrandDto dto)
+    public IActionResult CreateBrand() => View();
+
+    [HttpPost("create-brand")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateBrand(CreateBrandViewModel vm)
     {
         if (!ModelState.IsValid)
         {
             TempData[ErrorMessage] = "تایتل یا Url نباید خالی باشد";
-            return View(dto);
-        }
-        if (!await _productService.CreateBrand(dto))
-        {
-            TempData[ErrorMessage] = "ذخیره عکس ناموفق بود";
-            return View(dto);
+            return View(vm);
         }
 
-        TempData[SuccessMessage] = SuccessText;
-        return RedirectToAction("FilterBrand");
+        try
+        {
+            var image = new FileParameter(vm.Image.OpenReadStream(), vm.Image.FileName, vm.Image.ContentType);
+            await _client.BrandsPOSTAsync(vm.Title, vm.Url, image, vm.Order);
+
+            TempData[SuccessMessage] = SuccessText;
+            return RedirectToAction("FilterBrand");
+        }
+        catch (ApiException)
+        {
+            TempData[ErrorMessage] = "ذخیره عکس ناموفق بود";
+            return View(vm);
+        }
     }
 
     [HttpGet("filter-brand")]
     public async Task<IActionResult> FilterBrand(FilterBrandDto dto)
     {
-        var filter = await _productService.FilterBrands(dto);
+        var filter = await _client.BrandsGETAsync(dto.Title, dto.Url, dto.Data);
         return View(filter);
     }
+
     #endregion
 
-
     #region Category
+
     [HttpGet("create-category")]
     public async Task<IActionResult> CreateCategory()
     {
-        ViewData["ParentCategory"] = await _categoryService.GetAllActiveCategories();
+        ViewData["ParentCategory"] = (await _client.ActiveAsync()).ToList();
         return View();
     }
 
-    [HttpPost("create-category"), ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateCategory(CreateCategoryDto dto)
+    [HttpPost("create-category")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateCategory(CreateCategoryViewModel vm)
     {
-        ViewData["ParentCategory"] = await _categoryService.GetAllActiveCategories();
+        ViewData["ParentCategory"] = (await _client.ActiveAsync()).ToList();
+
         if (!ModelState.IsValid)
         {
             TempData[ErrorMessage] = "مشخصات را کامل وارد کنید";
-            return View(dto);
-        }
-        if (!await _categoryService.CreateCategory(dto))
-        {
-            TempData[ErrorMessage] = "url تکراری می باشد";
-            return View(dto);
+            return View(vm);
         }
 
-        TempData[SuccessMessage] = SuccessText;
-        return RedirectToAction("FilterCategory");
+        try
+        {
+            var image = new FileParameter(vm.MainImage.OpenReadStream(), vm.MainImage.FileName, vm.MainImage.ContentType);
+            await _client.CategoriesPOSTAsync(vm.ParentId, vm.Title, vm.Url, vm.Order, vm.ShowInHome, image);
+
+            TempData[SuccessMessage] = SuccessText;
+            return RedirectToAction("FilterCategory");
+        }
+        catch (ApiException)
+        {
+            TempData[ErrorMessage] = "url تکراری می‌باشد";
+            return View(vm);
+        }
     }
 
     [HttpGet("filter-category")]
     public async Task<IActionResult> FilterCategory(FilterCategoryDto dto)
     {
-        var filter = await _categoryService.FilterCategory(dto);
-        ViewData["ParentCategory"] = await _categoryService.GetAllActiveCategories();
+        var filter = await _client.CategoriesGETAsync(dto.ParentId, dto.Title, dto.Url, dto.CategoryStatus, dto.Data);
+        ViewData["ParentCategory"] = (await _client.ActiveAsync()).ToList();
         return View(filter);
     }
+
     #endregion
 
     #region Size
+
     [HttpGet("create-size")]
-    public IActionResult CreateSize()
-    {
-        return View();
-    }
-    [HttpPost("create-size"), ValidateAntiForgeryToken]
+    public IActionResult CreateSize() => View();
+
+    [HttpPost("create-size")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateSize(CreateSizeDto dto)
     {
         if (!ModelState.IsValid)
@@ -136,8 +141,8 @@ public class ProductController : AdminBaseController
             TempData[ErrorMessage] = "مشخصات را کامل وارد کنید";
             return View(dto);
         }
-        await _productService.CreateSize(dto);
 
+        await _client.SizesPOSTAsync(dto);
         TempData[SuccessMessage] = SuccessText;
         return RedirectToAction("FilterSize");
     }
@@ -145,184 +150,152 @@ public class ProductController : AdminBaseController
     [HttpGet("filter-size")]
     public async Task<IActionResult> FilterSize(FilterSizeDto dto)
     {
-        var filter = await _productService.FilterSizes(dto);
+        var filter = await _client.SizesGETAsync(dto.Title, dto.SizeType, dto.Data);
         return View(filter);
     }
+
     #endregion
 
     #region Product
+
     [HttpGet("create-product")]
     public async Task<IActionResult> CreateProduct()
     {
-        ViewData["Categories"] = await _categoryService.GetAllActiveCategories();
-        ViewData["Brands"] = await _productService.GetAllBrands();
-        return View(new CreateProductDto());
+        ViewData["Categories"] = (await _client.ActiveAsync()).ToList();
+        ViewData["Brands"] = (await _client.AllAsync()).ToList();
+        return View(new CreateProductViewModel());
     }
 
-    [HttpPost("create-product"), ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateProduct(CreateProductDto dto)
+    [HttpPost("create-product")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateProduct(CreateProductViewModel vm)
     {
-        ViewData["Categories"] = await _categoryService.GetAllActiveCategories();
-        ViewData["Brands"] = await _productService.GetAllBrands();
+        ViewData["Categories"] = (await _client.ActiveAsync()).ToList();
+        ViewData["Brands"] = (await _client.AllAsync()).ToList();
+
         if (!ModelState.IsValid)
         {
             TempData[ErrorMessage] = "مشخصات را کامل وارد کنید";
-            return View(dto);
-        }
-        if (!dto.MainImage.IsImage())
-        {
-            TempData[ErrorMessage] = "فرمت تصویر اصلی محصول قابل قبول نیست";
-            return View(dto);
+            return View(vm);
         }
 
-        if (dto.ProductGalleries != null)
+        try
         {
-            if (dto.ProductGalleries.Any(image => !image.IsImage()))
-            {
-                TempData[ErrorMessage] = "فرمت تصویر انتخاب شده برای گالری محصول قابل قبول نیست";
-                return View(dto);
-            }
+            var mainImage = new FileParameter(vm.MainImage.OpenReadStream(), vm.MainImage.FileName, vm.MainImage.ContentType);
+            var galleries = vm.ProductGalleries?
+                .Select(f => new FileParameter(f.OpenReadStream(), f.FileName, f.ContentType))
+                .ToList() ?? new List<FileParameter>();
+
+            await _client.ProductsPOSTAsync(
+                vm.Title, vm.BrandId, vm.IsAvailable, vm.BasePrice, mainImage,
+                vm.ShortDescription, vm.Description, vm.Categories, galleries);
+
+            TempData[SuccessMessage] = "محصول با موفقیت ایجاد شد.";
+            return RedirectToAction("FilterProduct");
         }
-        var result = await _productService.CreateProduct(dto);
-        switch (result)
+        catch (ApiException ex)
         {
-
-            case CreateProductResult.Error:
-                TempData[ErrorMessage] = "عملیات با خطا مواجه شد";
-                break;
-            case CreateProductResult.SavingMainImageFailed:
-                TempData[ErrorMessage] = "ذخیره ی تصویر محصول با خطا مواجه شد";
-                break;
-            case CreateProductResult.BrandNotFound:
-                TempData[ErrorMessage] = "برند یافت نشد";
-                break;
-            case CreateProductResult.CategoryNotFound:
-                TempData[ErrorMessage] = "دسته بندی انتخاب شده یافت نشد";
-                break;
-            case CreateProductResult.Success:
-                TempData[SuccessMessage] = "محصول با موفقیت ایجاد شد.";
-                return RedirectToAction("FilterProduct");
-            default:
-                throw new ArgumentOutOfRangeException();
+            TempData[ErrorMessage] = ex.Message;
+            return View(vm);
         }
-
-        return RedirectToAction("FilterProduct");
     }
 
     [HttpGet("filter-product")]
-
-    public async Task<IActionResult> FilterProduct(FilterProductDto dto)
+    public async Task<IActionResult> FilterProduct(FilterProductDto filter)
     {
-        var filter = await _productService.FilterProduct(dto);
-        ViewData["Categories"] = await _categoryService.GetAllActiveCategories();
-        ViewData["Brands"] = await _productService.GetAllBrands();
-        return View(filter);
+        var result = await _client.FilterAsync(
+            filter.Title, filter.BrandId, filter.CategoryId, filter.CategoryUrl, filter.ColorId,
+            filter.MostPrice, filter.LeastPrice, filter.StartPrice, filter.EndPrice,
+            filter.ProductOrder, filter.ProductStatus, filter.Data,
+            filter.PageId, filter.PageCount, filter.AllEntitiesCount, filter.StartPage, filter.EndPage,
+            filter.TakeEntity, filter.SkipEntity, filter.HowManyShowPageAfterAndBefore);
+
+        ViewData["Categories"] = (await _client.ActiveAsync()).ToList();
+        ViewData["Brands"] = (await _client.AllAsync()).ToList();
+        return View(result);
     }
 
     [HttpGet("edit-product")]
-
     public async Task<IActionResult> EditProduct(long productId)
     {
-        var previousProduct = await _productService.GetEditProduct(productId);
-        ViewData["Categories"] = await _categoryService.GetAllActiveCategories();
-        ViewData["Brands"] = await _productService.GetAllBrands();
-        return View(previousProduct);
+        var previous = await _client.EditAsync(productId);
+        var vm = new EditProductViewModel
+        {
+            ProductId = previous.ProductId,
+            Title = previous.Title,
+            IsAvailable = previous.IsAvailable,
+            Price = previous.Price,
+            ShortDescription = previous.ShortDescription,
+            Description = previous.Description,
+            BrandId = previous.BrandId,
+            Categories = previous.Categories?.ToList() ?? new List<long>()
+        };
+
+        ViewData["Categories"] = (await _client.ActiveAsync()).ToList();
+        ViewData["Brands"] = (await _client.AllAsync()).ToList();
+        return View(vm);
     }
 
     [HttpPost("edit-product")]
-
-    public async Task<IActionResult> EditProduct(EditProductDto dto)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProduct(EditProductViewModel vm)
     {
-        ViewData["Categories"] = await _categoryService.GetAllActiveCategories();
-        ViewData["Brands"] = await _productService.GetAllBrands();
+        ViewData["Categories"] = (await _client.ActiveAsync()).ToList();
+        ViewData["Brands"] = (await _client.AllAsync()).ToList();
 
-        if (dto.MainImage != null && !dto.MainImage.IsImage())
+        if (vm.MainImage != null && !ModelState.IsValid) return View(vm);
+
+        try
         {
-            TempData[ErrorMessage] = "فرمت تصویر اصلی محصول قابل قبول نیست";
-            return View(dto);
+            FileParameter? image = vm.MainImage != null && vm.MainImage.Length > 0
+                ? new FileParameter(vm.MainImage.OpenReadStream(), vm.MainImage.FileName, vm.MainImage.ContentType)
+                : null;
+
+            await _client.ProductsPUTAsync(
+                vm.ProductId, vm.Title, vm.IsAvailable, image!, vm.Price,
+                vm.ShortDescription, vm.Description, vm.BrandId, vm.Categories);
+
+            TempData[SuccessMessage] = "عملیات با موفقیت انجام شد.";
+            return RedirectToAction("ProductDetail", new { productId = vm.ProductId });
         }
-
-        if (!ModelState.IsValid) return View(dto);
-
-        var result = await _productService.EditProduct(dto);
-
-        switch (result)
+        catch (ApiException ex)
         {
-
-            case EditProductResult.Error:
-                TempData[ErrorMessage] = "عملیات با خطا مواجه شد";
-                break;
-            case EditProductResult.ImageNotSaved:
-                TempData[ErrorMessage] = "در ذخیره سازی تصویر خطایی رخ داده است";
-                break;
-            case EditProductResult.BrandNotFound:
-                TempData[ErrorMessage] = "برند یافت نشد";
-                break;
-            case EditProductResult.CategoryNotFound:
-                TempData[ErrorMessage] = "دسته بندی انتخاب شده یافت نشد";
-                break;
-            case EditProductResult.Success:
-                TempData[SuccessMessage] = "عملیات با موفقیت انجام شد.";
-                return RedirectToAction("ProductDetail", new { area = "Admin", productId = dto.ProductId });
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+            TempData[ErrorMessage] = ex.Message;
+            return View(vm);
         }
-        return View(dto);
     }
 
     [HttpGet("product-detail-{productId}")]
-
     public async Task<IActionResult> ProductDetail(long productId)
     {
-        var productDetail = await _productService.GetProductDetail(productId);
-        ViewData["Categories"] = await _categoryService.GetAllActiveCategories();
-        ViewData["Brands"] = await _productService.GetAllBrands();
-        return View(productDetail);
+        var detail = await _client.ProductsGET3Async(productId);
+        return View(detail);
     }
 
     [HttpGet("create-variant")]
-
     public async Task<IActionResult> CreateVariant(long productId)
     {
         ViewData["ProductId"] = productId;
-        var colors = await _productService.GetAllProductColors();
-        var sizes = await _productService.GetAllProductSizes();
-        if (colors == null || sizes == null)
-        {
-            TempData[ErrorMessage] = " رنگ یا سایزی یافت نشد";
-            return View();
-
-        }
-        ViewData["Colors"] = colors;
-        ViewData["Sizes"] = sizes;
+        ViewData["Colors"] = (await _client.ColorsGETAsync(null, null)).Data?.ToList() ?? new List<ProductColor>();
+        ViewData["Sizes"] = (await _client.SizesGETAsync(null, null, null)).Data?.ToList() ?? new List<ProductSize>();
         return View();
     }
-    [HttpPost("create-variant"), ValidateAntiForgeryToken]
 
+    [HttpPost("create-variant")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateVariant(CreateProductVariantDto dto)
     {
-        ViewData["ProductId"] = dto.ProductId;
-        var colors = await _productService.GetAllProductColors();
-        var sizes = await _productService.GetAllProductSizes();
-        if (colors == null || sizes == null)
-        {
-            TempData[ErrorMessage] = " رنگ یا سایزی یافت نشد";
-            return View(dto);
-        }
-        ViewData["Colors"] = colors;
-        ViewData["Sizes"] = sizes;
         if (!ModelState.IsValid)
         {
-            TempData[ErrorMessage] = "فیلد ها را کامل وارد کنید";
+            ViewData["ProductId"] = dto.ProductId;
+            ViewData["Colors"] = (await _client.ColorsGETAsync(null, null)).Data?.ToList() ?? new List<ProductColor>();
+            ViewData["Sizes"] = (await _client.SizesGETAsync(null, null, null)).Data?.ToList() ?? new List<ProductSize>();
             return View(dto);
         }
-        await _productService.CreateProductVariant(dto);
-        return RedirectToAction("ProductDetail", "Product", new { area = "Admin", productId = dto.ProductId });
+
+        await _client.VariantsAsync(dto);
+        return RedirectToAction("ProductDetail", new { productId = dto.ProductId });
     }
-
-
-
 
     [HttpGet("create-feature")]
     public IActionResult CreateFeature(long productId)
@@ -331,13 +304,16 @@ public class ProductController : AdminBaseController
         return View();
     }
 
-    [HttpPost("create-feature"), ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateFeature(CreateProductFeatureDto features)
+    [HttpPost("create-feature")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateFeature(CreateProductFeatureDto dto)
     {
-        if (!ModelState.IsValid) return View(features);
-        await _productService.CreateProductFeature(features);
+        if (!ModelState.IsValid) return View(dto);
+
+        await _client.FeaturesAsync(dto);
         TempData[SuccessMessage] = SuccessText;
-        return RedirectToAction("ProductDetail", new { area = "Admin", productId = features.ProductId });
+        return RedirectToAction("ProductDetail", new { productId = dto.ProductId });
     }
+
     #endregion
 }

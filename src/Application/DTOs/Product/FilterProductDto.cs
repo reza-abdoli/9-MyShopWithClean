@@ -9,7 +9,7 @@ namespace Application.DTOs.Product
 {
     public class FilterProductDto : BasePaging
     {
-        public string Title { get; set; }
+        public string? Title { get; set; }
         public long? BrandId { get; set; }
         public long? CategoryId { get; set; }
         public string? categoryUrl { get; set; }
@@ -20,7 +20,7 @@ namespace Application.DTOs.Product
         public int? EndPrice { get; set; }
         public FilterProductOrder ProductOrder { get; set; } = FilterProductOrder.Newest;
         public FilterProductStatus ProductStatus { get; set; }
-        public List<Domain.Entities.Product.Product> Data { get; set; }
+        public List<Domain.Entities.Product.Product>? Data { get; set; }
 
 
         public FilterProductDto SetData(List<Domain.Entities.Product.Product> data)
