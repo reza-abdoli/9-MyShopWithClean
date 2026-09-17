@@ -3,7 +3,7 @@ using Api.Controllers.BaseControllers;
 using Application.DTOs.Product;
 using Application.Features.Products.Requests.Queries;
 using Application.Features.Products.Responses;
-using Domain.Entities.Product;
+// using Domain.Entities.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,8 +19,8 @@ public class ProductController : ApiControllerBase
         if (url != null) filter.categoryUrl = url;
 
         var result = await Bus.InvokeAsync<FilterProductDto>(new FilterProductQuery { FilterProductDto = filter });
-        var colors = await Bus.InvokeAsync<List<ProductColor>>(new Application.Features.Colors.Requests.Queries.GetAllProductColorsQuery());
-        var sizes = await Bus.InvokeAsync<List<ProductSize>>(new Application.Features.Sizes.Requests.Queries.GetAllProductSizesQuery());
+        var colors = await Bus.InvokeAsync<List<ProductColorDto>>(new Application.Features.Colors.Requests.Queries.GetAllProductColorsQuery());
+        var sizes = await Bus.InvokeAsync<List<ProductSizeDto>>(new Application.Features.Sizes.Requests.Queries.GetAllProductSizesQuery());
 
         return Ok(new ProductListResponseDto { Result = result, Colors = colors, Sizes = sizes });
     }

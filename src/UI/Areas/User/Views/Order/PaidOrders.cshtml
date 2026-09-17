@@ -1,4 +1,4 @@
-@model List<UI.Services.Base.Order>
+@model List<UI.Services.Base.PaidOrderDto>
 @{
     ViewData["Title"] = "سفارش‌های من";
     Layout = "_UserLayout";
@@ -28,7 +28,6 @@
             {
                 <div class="bg-white rounded-4 border shadow-sm overflow-hidden">
 
-                    @* ─── هدر سفارش ─── *@
                     <div class="d-flex flex-wrap justify-content-between align-items-center
                                 gap-2 px-4 py-3 bg-light border-bottom">
                         <div class="d-flex align-items-center gap-3">
@@ -49,40 +48,30 @@
                         </div>
                     </div>
 
-                    @* ─── اقلام ─── *@
                     <div class="p-4">
                         @if (order.OrderDetails != null && order.OrderDetails.Any())
                         {
                             @foreach (var item in order.OrderDetails)
                             {
-                                var product = item.ProductVariant?.Product;
-                                var variant = item.ProductVariant;
-
                                 <div class="d-flex gap-3 align-items-center py-2
                                             @(item != order.OrderDetails.Last() ? "border-bottom" : "")">
 
-                                    @if (product != null)
-                                    {
-                                        <img src="@ImageUrls.ProductImageThumb(product.MainImageName)"
-                                             alt="@product.Title"
-                                             class="rounded-3 border flex-shrink-0"
-                                             style="width:60px;height:60px;object-fit:cover">
-                                    }
+                                    <img src="@ImageUrls.ProductImageThumb(item.ProductMainImageName)"
+                                         alt="@item.ProductTitle"
+                                         class="rounded-3 border flex-shrink-0"
+                                         style="width:60px;height:60px;object-fit:cover">
 
                                     <div class="flex-grow-1 min-w-0">
                                         <div class="fw-bold font-13 mb-1 text-truncate">
-                                            @(product?.Title ?? "—")
+                                            @item.ProductTitle
                                         </div>
                                         <div class="font-12 text-muted d-flex flex-wrap gap-2">
-                                            @if (variant != null)
-                                            {
-                                                <span>
-                                                    <span class="d-inline-block rounded-circle border me-1"
-                                                          style="width:9px;height:9px;background:@variant.ColorCode;vertical-align:middle"></span>
-                                                    @variant.ColorTitle
-                                                </span>
-                                                <span>سایز: @variant.SizeTitle</span>
-                                            }
+                                            <span>
+                                                <span class="d-inline-block rounded-circle border me-1"
+                                                      style="width:9px;height:9px;background:@item.ColorCode;vertical-align:middle"></span>
+                                                @item.ColorTitle
+                                            </span>
+                                            <span>سایز: @item.SizeTitle</span>
                                             <span>تعداد: @item.Count</span>
                                         </div>
                                     </div>
@@ -98,7 +87,6 @@
                         }
                     </div>
 
-                    @* ─── فوتر سفارش ─── *@
                     <div class="d-flex flex-wrap justify-content-between align-items-center
                                 gap-2 px-4 py-3 bg-light border-top">
                         <div class="font-12 text-muted">
@@ -110,12 +98,10 @@
                                     <text>کد پستی: </text>@order.PostCode
                                 </span>
                             }
-
                             <span>
                                 <i class="bi bi-credit-card me-1"></i>
-                               <text>کد تراکنش: </text>@order.PaymentTransaction?.Id
+                                <text>کد تراکنش: </text>@order.BankTraceCode
                             </span>
-                            
                         </div>
                         <div class="d-flex align-items-center gap-1">
                             <span class="font-12 text-muted">جمع کل:</span>

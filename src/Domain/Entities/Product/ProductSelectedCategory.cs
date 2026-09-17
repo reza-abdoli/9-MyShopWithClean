@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using System.Text.Json.Serialization;
+using Domain.Entities;
 
 namespace Domain.Entities.Product
 {
@@ -6,6 +7,7 @@ namespace Domain.Entities.Product
     {
         public long ProductId { get; set; }
         public long CategoryId { get; set; }
+        [JsonIgnore]
         public Product Product { get; set; }
         public ProductCategory Category { get; set; }
     }

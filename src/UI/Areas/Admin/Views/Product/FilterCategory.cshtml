@@ -1,7 +1,7 @@
 @model UI.Services.Base.FilterCategoryDto
 @{
     ViewData["Title"] = "مدیریت دسته‌بندی‌ها";
-    var parentCategories = (List<ProductCategory>) ViewData["ParentCategory"];
+    var parentCategories = (List<ProductCategoryDto>) ViewData["ParentCategory"];
 }
 
 <div class="page-header">
@@ -85,9 +85,9 @@
                             </td>
                             <td>@cat.Title</td>
                             <td>
-                                @if (cat.ParentId != null && cat.Parent != null)
+                                @if (cat.ParentId != null && !string.IsNullOrEmpty(cat.ParentTitle))
                                 {
-                                    <span>@cat.Parent.Title</span>
+                                    <span>@cat.ParentTitle</span>
                                 }
                                 else
                                 {

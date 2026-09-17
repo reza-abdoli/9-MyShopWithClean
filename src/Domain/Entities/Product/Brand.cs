@@ -1,5 +1,6 @@
 ﻿
 
+using System.Text.Json.Serialization;
 using Domain.Entities;
 
 namespace Domain.Entities.Product
@@ -10,7 +11,7 @@ namespace Domain.Entities.Product
         public string Url { get; set; }
         public string ImageName { get; set; }
         public int Order { get; set; }
-
+        [JsonIgnore]
         public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

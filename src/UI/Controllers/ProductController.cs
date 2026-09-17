@@ -24,8 +24,8 @@ public class ProductController : Controller
             filter.PageId, filter.PageCount, filter.AllEntitiesCount, filter.StartPage, filter.EndPage,
             filter.TakeEntity, filter.SkipEntity, filter.HowManyShowPageAfterAndBefore, url);
 
-        ViewData["Colors"] = response.Colors?.ToList() ?? new List<ProductColor>();
-        ViewData["Sizes"] = response.Sizes?.ToList() ?? new List<ProductSize>();
+        ViewData["Colors"] = response.Colors?.ToList() ?? new List<ProductColorDto>();
+        ViewData["Sizes"] = response.Sizes?.ToList() ?? new List<ProductSizeDto>();
 
         return View(response.Result);
     }

@@ -17,19 +17,8 @@ public class GetTransactionByAuthorityQueryHandler
         _paymentTransactionRepository = paymentTransactionRepository;
     }
 
-    public async Task<PaymentTransactionDto?> Handle(GetTransactionByAuthorityQuery query)
+    public async Task<PaymentTransaction?> Handle(GetTransactionByAuthorityQuery query)
     {
-        var tx = await _paymentTransactionRepository.GetQuery().SingleOrDefaultAsync(t => t.Authority == query.Authority);
-        if (tx == null) return null;
-
-        return new PaymentTransactionDto
-        {
-            Id = tx.Id,
-            UserId = tx.UserId,
-            OrderId = tx.OrderId,
-            Amount = tx.Amount,
-            Authority = tx.Authority,
-            Status = tx.Status
-        };
+        return await _paymentTransactionRepository.GetQuery().SingleOrDefaultAsync(t => t.Authority == query.Authority);
     }
 }

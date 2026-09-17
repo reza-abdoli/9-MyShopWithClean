@@ -9,6 +9,6 @@ namespace Application.Features.Banners.Responses;
 public class HomeDto
 {
     public List<BannerItemDto> Banners { get; set; }
-    public List<ProductCategory> Categories { get; set; }
+    public List<ProductCategoryDto> Categories { get; set; }
     public List<ProductItemDto> Products { get; set; }
 }

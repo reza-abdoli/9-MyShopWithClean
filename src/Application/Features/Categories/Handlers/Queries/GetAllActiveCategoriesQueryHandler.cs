@@ -1,6 +1,7 @@
 // Application/Features/Categories/Handlers/Queries/GetAllActiveCategoriesQueryHandler.cs
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Application.DTOs.Product;
 using Application.Features.Categories.Requests.Queries;
 using Application.Interfaces.Persistence;
 using Domain.Entities.Product;
@@ -17,8 +18,21 @@ public class GetAllActiveCategoriesQueryHandler
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<List<ProductCategory>> Handle(GetAllActiveCategoriesQuery query)
+    public async Task<List<ProductCategoryDto>> Handle(GetAllActiveCategoriesQuery query)
     {
-        return await _categoryRepository.GetQuery().Where(c => c.IsActive).Include(c => c.Parent).ToListAsync();
+        return await _categoryRepository.GetQuery()
+            .Where(c => c.IsActive)
+            .Select(c => new ProductCategoryDto
+            {
+                Id = c.Id,
+                ParentId = c.ParentId,
+                Title = c.Title,
+                Url = c.Url,
+                MainImage = c.MainImage,
+                IsActive = c.IsActive,
+                ShowInHome = c.ShowInHome,
+                Order = c.Order
+            })
+            .ToListAsync();
     }
 }

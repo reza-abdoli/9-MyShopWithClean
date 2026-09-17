@@ -8,6 +8,6 @@ namespace Application.Features.Products.Responses;
 public class ProductListResponseDto
 {
     public FilterProductDto Result { get; set; }
-    public List<ProductColor> Colors { get; set; }
-    public List<ProductSize> Sizes { get; set; }
+    public List<ProductColorDto> Colors { get; set; }
+    public List<ProductSizeDto> Sizes { get; set; }
 }

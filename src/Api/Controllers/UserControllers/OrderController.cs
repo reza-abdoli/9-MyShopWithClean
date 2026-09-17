@@ -63,9 +63,9 @@ public class OrderController : ApiControllerBase
     }
 
     [HttpGet("paid")]
-    public async Task<ActionResult<List<Order>>> PaidOrders()
+    public async Task<ActionResult<List<PaidOrderDto>>> PaidOrders()
     {
-        var orders = await Bus.InvokeAsync<List<Order>>(new GetUserPaidOrdersQuery { UserId = UserId });
+        var orders = await Bus.InvokeAsync<List<PaidOrderDto>>(new GetUserPaidOrdersQuery { UserId = UserId });
         return Ok(orders);
     }
 }

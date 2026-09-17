@@ -15,14 +15,14 @@ public class SiteHeaderViewComponent : ViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync()
     {
-        List<ProductCategory> categories;
+        List<ProductCategoryDto> categories;
         try
         {
             categories = (await _client.ActiveAsync()).ToList();
         }
         catch (ApiException)
         {
-            categories = new List<ProductCategory>();
+            categories = new List<ProductCategoryDto>();
         }
 
         ViewData["Categories"] = categories;

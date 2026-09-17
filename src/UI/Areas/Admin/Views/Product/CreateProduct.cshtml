@@ -1,6 +1,6 @@
 @model UI.Models.CreateProductViewModel
 @{
-    var brands     = ViewData["Brands"]     as List<Brand>              ?? new List<Brand>();
+    var brands = (List<BrandDto>)ViewData["Brands"]!; 
     var categories = ViewData["Categories"] as List<ProductCategory>    ?? new List<ProductCategory>();
 }
 

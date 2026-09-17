@@ -37,77 +37,59 @@
 
                         @foreach (var item in Model.OrderDetails)
                         {
-                            var product = item.ProductVariant.Product;
-                            var variant = item.ProductVariant;
-
                             <div class="cart-item border-bottom p-3 d-flex gap-3 align-items-center"
-                                 id="cart-item-@item.Id"
-                                 data-order-detail-id="@item.Id"
-                                 data-price="@product.Price"
-                                 data-stock="@variant.StockCount">
+                                id="cart-item-@item.Id"
+                                data-order-detail-id="@item.Id"
+                                data-price="@item.ProductPrice"
+                                data-stock="@item.StockCount">
 
-                                @* تصویر *@
                                 <a asp-controller="Product" asp-action="ProductDetail"
-                                   asp-route-productId="@product.Id" class="flex-shrink-0">
-                                    <img src="@ImageUrls.ProductImageThumb(product.MainImageName)"
-                                         alt="@product.Title"
-                                         class="rounded-3 border"
-                                         style="width:80px;height:80px;object-fit:cover">
+                                asp-route-productId="@item.ProductId" class="flex-shrink-0">
+                                    <img src="@ImageUrls.ProductImageThumb(item.ProductMainImageName)"
+                                        alt="@item.ProductTitle"
+                                        class="rounded-3 border"
+                                        style="width:80px;height:80px;object-fit:cover">
                                 </a>
 
-                                @* اطلاعات محصول *@
                                 <div class="flex-grow-1 min-w-0">
                                     <a asp-controller="Product" asp-action="ProductDetail"
-                                       asp-route-productId="@product.Id"
-                                       class="fw-bold font-13 text-dark text-decoration-none d-block mb-1 text-truncate">
-                                        @product.Title
+                                    asp-route-productId="@item.ProductId"
+                                    class="fw-bold font-13 text-dark text-decoration-none d-block mb-1 text-truncate">
+                                        @item.ProductTitle
                                     </a>
                                     <div class="d-flex flex-wrap gap-2 font-12 text-muted mb-2">
                                         <span>
                                             <span class="d-inline-block rounded-circle border me-1"
-                                                  style="width:10px;height:10px;background:@variant.ColorCode;vertical-align:middle"></span>
-                                            @variant.ColorTitle
+                                                style="width:10px;height:10px;background:@item.ColorCode;vertical-align:middle"></span>
+                                            @item.ColorTitle
                                         </span>
-                                        <span>سایز: @variant.SizeTitle</span>
+                                        <span>سایز: @item.SizeTitle</span>
                                     </div>
 
-                                    @* کانتر تعداد *@
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="d-flex align-items-center border rounded-3 overflow-hidden">
-                                            <button type="button"
-                                                    class="btn btn-sm btn-light px-3 py-1 border-0 cart-minus"
-                                                    data-id="@item.Id">−</button>
-                                            <span class="px-3 fw-bold font-13 qty-display"
-                                                  id="qty-@item.Id">@item.Count</span>
-                                            <button type="button"
-                                                    class="btn btn-sm btn-light px-3 py-1 border-0 cart-plus"
-                                                    data-id="@item.Id">+</button>
+                                            <button type="button" class="btn btn-sm btn-light px-3 py-1 border-0 cart-minus" data-id="@item.Id">−</button>
+                                            <span class="px-3 fw-bold font-13 qty-display" id="qty-@item.Id">@item.Count</span>
+                                            <button type="button" class="btn btn-sm btn-light px-3 py-1 border-0 cart-plus" data-id="@item.Id">+</button>
                                         </div>
-                                        <span class="font-12 text-muted">
-                                            موجودی: @variant.StockCount
-                                        </span>
+                                        <span class="font-12 text-muted">موجودی: @item.StockCount</span>
                                     </div>
 
-                                    @* پیام خطا برای این آیتم *@
-                                    <div class="item-error text-danger font-12 mt-1 d-none"
-                                         id="err-@item.Id"></div>
+                                    <div class="item-error text-danger font-12 mt-1 d-none" id="err-@item.Id"></div>
                                 </div>
 
-                                @* قیمت *@
                                 <div class="text-end flex-shrink-0">
-                                    <div class="fw-bold text-danger font-14 item-total-price"
-                                         id="price-@item.Id">
-                                        @((product.Price * item.Count).ToString("N0"))
+                                    <div class="fw-bold text-danger font-14 item-total-price" id="price-@item.Id">
+                                        @item.TotalPrice.ToString("N0")
                                     </div>
                                     <div class="font-12 text-muted">تومان</div>
-                                    <button type="button"
-                                            class="btn btn-sm btn-link text-danger p-0 mt-2 font-12 cart-remove"
-                                            data-id="@item.Id">
+                                    <button type="button" class="btn btn-sm btn-link text-danger p-0 mt-2 font-12 cart-remove" data-id="@item.Id">
                                         <i class="bi bi-trash3"></i> حذف
                                     </button>
                                 </div>
                             </div>
                         }
+
                     </div>
                 </div>
 

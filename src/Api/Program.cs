@@ -81,6 +81,7 @@ builder.Services.AddSwaggerGen(options =>
         Title = "MyMvcApp Api",
         Version = "v1"
     });
+    
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {

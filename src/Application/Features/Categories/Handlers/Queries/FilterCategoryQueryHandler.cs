@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Application.DTOs.Category;
+using Application.DTOs.Product;
 using Application.Features.Categories.Requests.Queries;
 using Application.Interfaces.Persistence;
 using Domain.Entities.Product;
@@ -44,7 +45,19 @@ public class FilterCategoryQueryHandler
         if (filter.ParentId is > 0)
             q = q.Where(c => c.ParentId == filter.ParentId);
 
-        filter.Data = await q.ToListAsync();
+        filter.Data = await q.Select(c => new ProductCategoryDto
+        {
+            Id = c.Id,
+            ParentId = c.ParentId,
+            Title = c.Title,
+            Url = c.Url,
+            MainImage = c.MainImage,
+            IsActive = c.IsActive,
+            ShowInHome = c.ShowInHome,
+            Order = c.Order,
+            ParentTitle = c.Parent != null ? c.Parent.Title : null
+        }).ToListAsync();
+
         return filter;
     }
 }

@@ -1,7 +1,9 @@
+// Application/DTOs/Order/OrderDetailDto.cs
 using System;
 using System.Collections.Generic;
+using Application.DTOs.Users;
+using Application.Features.Payments.Responses;
 using Domain.Entities.Order;
-using Domain.Entities.Users;
 
 namespace Application.DTOs.Order
 {
@@ -19,9 +21,9 @@ namespace Application.DTOs.Order
         public string? Description { get; set; }
         public string? PostTraceCode { get; set; }
         public string BankTraceCode { get; set; }
-        public PaymentTransaction? PaymentTransaction { get; set; }
+        public PaymentTransactionDto? PaymentTransaction { get; set; }
         public OrderState OrderState { get; set; }
-        public User User { get; set; }
-        public List<OrderDetail> OrderDetails { get; set; }
+        public UserSummaryDto User { get; set; }
+        public List<OrderItemDto> OrderDetails { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using System.Text.Json.Serialization;
+using Domain.Entities;
 
 namespace Domain.Entities.Product
 {
@@ -11,8 +12,14 @@ namespace Domain.Entities.Product
         public bool IsActive { get; set; }
         public bool ShowInHome { get; set; }
         public int Order { get; set; }
-        public ProductCategory Parent { get; set; }
+
+        [JsonIgnore]
+        public ProductCategory Parent { get; set; }   // Parent <-> SubCategories چرخه می‌سازه
+
         public ICollection<ProductCategory> SubCategories { get; set; } = new List<ProductCategory>();
+
+        [JsonIgnore]
         public ICollection<ProductSelectedCategory> ProductSelectedCategories { get; set; }
+        // این هم چرخه می‌سازه: Category -> ProductSelectedCategories -> Product -> SelectedCategories -> Category...
     }
 }

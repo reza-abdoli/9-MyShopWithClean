@@ -62,31 +62,25 @@
             @if (Model.OrderDetails != null && Model.OrderDetails.Any())
             {
                 var lastItem = Model.OrderDetails.Last();
-                foreach (var item in Model.OrderDetails)
+                @foreach (var item in Model.OrderDetails)
                 {
-                    var product = item.ProductVariant?.Product;
-                    var variant = item.ProductVariant;
-
                     <div class="d-flex gap-3 align-items-center py-3 @(item != lastItem ? "border-bottom" : "")">
 
-                        @if (product != null && !string.IsNullOrEmpty(product.MainImageName))
+                        @if (!string.IsNullOrEmpty(item.ProductMainImageName))
                         {
-                            <img src="@ImageUrls.ProductImageThumb(product.MainImageName)" alt="@product.Title"
-                                 class="rounded-3 border flex-shrink-0" style="width:64px;height:64px;object-fit:cover">
+                            <img src="@ImageUrls.ProductImageThumb(item.ProductMainImageName)" alt="@item.ProductTitle"
+                                class="rounded-3 border flex-shrink-0" style="width:64px;height:64px;object-fit:cover">
                         }
 
                         <div class="flex-grow-1 min-w-0">
-                            <div class="fw-bold font-13 mb-1">@(product?.Title ?? "—")</div>
+                            <div class="fw-bold font-13 mb-1">@item.ProductTitle</div>
                             <div class="font-12 text-muted d-flex flex-wrap gap-3">
-                                @if (variant != null)
-                                {
-                                    <span>
-                                        <span class="d-inline-block rounded-circle border me-1"
-                                              style="width:10px;height:10px;background:@variant.ColorCode;vertical-align:middle"></span>
-                                        @variant.ColorTitle
-                                    </span>
-                                    <span>سایز: @variant.SizeTitle</span>
-                                }
+                                <span>
+                                    <span class="d-inline-block rounded-circle border me-1"
+                                        style="width:10px;height:10px;background:@item.ColorCode;vertical-align:middle"></span>
+                                    @item.ColorTitle
+                                </span>
+                                <span>سایز: @item.SizeTitle</span>
                                 <span>تعداد: <strong>@item.Count</strong></span>
                                 <span>قیمت واحد: <strong>@item.ProductPrice.ToString("N0") تومان</strong></span>
                             </div>

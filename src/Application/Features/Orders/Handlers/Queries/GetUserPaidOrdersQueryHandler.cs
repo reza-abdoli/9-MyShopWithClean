@@ -1,6 +1,7 @@
 // Application/Features/Orders/Handlers/Queries/GetUserPaidOrdersQueryHandler.cs
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Application.DTOs.Order;
 using Application.Features.Orders.Requests.Queries;
 using Application.Interfaces.Persistence;
 using Domain.Entities.Order;
@@ -17,13 +18,39 @@ public class GetUserPaidOrdersQueryHandler
         _orderRepository = orderRepository;
     }
 
-    public async Task<List<Domain.Entities.Order.Order>> Handle(GetUserPaidOrdersQuery query)
+    public async Task<List<PaidOrderDto>> Handle(GetUserPaidOrdersQuery query)
     {
         return await _orderRepository.GetQuery()
             .Where(o => o.UserId == query.UserId && o.OrderState == OrderState.Paid)
-            .Include(o => o.OrderDetails)
-                .ThenInclude(d => d.ProductVariant)
-                    .ThenInclude(v => v.Product)
+            .Select(o => new PaidOrderDto
+            {
+                Id = o.Id,
+                UserName = o.UserName,
+                DestinationCity = o.DestinationCity,
+                Address = o.Address,
+                PostCode = o.PostCode,
+                TotalPrice = o.TotalPrice,
+                Description = o.Description,
+                PostTraceCode = o.PostTraceCode,
+                BankTraceCode = o.TransactionId.HasValue ? o.TransactionId.ToString() : string.Empty,
+                PaymentDate = o.PaymentDate,
+                OrderState = o.OrderState,
+                OrderDetails = o.OrderDetails.Select(d => new OrderItemDto
+                {
+                    Id = d.Id,
+                    ProductVariantId = d.ProductVariantId,
+                    ProductPrice = d.ProductPrice,
+                    TotalPrice = d.TotalPrice,
+                    Count = d.Count,
+                    ProductId = d.ProductVariant.Product.Id,
+                    ProductTitle = d.ProductVariant.Product.Title,
+                    ProductMainImageName = d.ProductVariant.Product.MainImageName,
+                    ColorTitle = d.ProductVariant.ColorTitle,
+                    ColorCode = d.ProductVariant.ColorCode,
+                    SizeTitle = d.ProductVariant.SizeTitle,
+                    StockCount = d.ProductVariant.StockCount
+                }).ToList()
+            })
             .ToListAsync();
     }
 }

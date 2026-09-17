@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Domain.Entities;
 
 namespace Domain.Entities.Product
@@ -12,6 +13,7 @@ namespace Domain.Entities.Product
         public string ColorTitle { get; set; }
         public string ColorCode { get; set; }
         public string SizeTitle { get; set; }
+        [JsonIgnore]
         public Product Product { get; set; }
 
         [Timestamp]

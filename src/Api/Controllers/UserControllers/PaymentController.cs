@@ -38,7 +38,7 @@ public class PaymentController : ApiControllerBase
             {
                 UserId = UserId,
                 TotalCartPrice = openOrder.TotalCartPrice(),
-                OrderId = openOrder.Order.Id
+                OrderId = openOrder.OrderId
             });
 
             return isSuccess
@@ -50,7 +50,7 @@ public class PaymentController : ApiControllerBase
         await Bus.InvokeAsync(new CreatePendingTransactionCommand
         {
             UserId = UserId,
-            OrderId = openOrder.Order.Id,
+            OrderId = openOrder.OrderId,
             Amount = openOrder.TotalCartPrice(),
             Authority = authority
         });

@@ -276,8 +276,8 @@ public class ProductController : AdminBaseController
     public async Task<IActionResult> CreateVariant(long productId)
     {
         ViewData["ProductId"] = productId;
-        ViewData["Colors"] = (await _client.ColorsGETAsync(null, null)).Data?.ToList() ?? new List<ProductColor>();
-        ViewData["Sizes"] = (await _client.SizesGETAsync(null, null, null)).Data?.ToList() ?? new List<ProductSize>();
+        ViewData["Colors"] = (await _client.ColorsGETAsync(null, null)).Data?.ToList() ?? new List<ProductColorDto>();
+        ViewData["Sizes"] = (await _client.SizesGETAsync(null, null, null)).Data?.ToList() ?? new List<ProductSizeDto>();
         return View();
     }
 
@@ -288,8 +288,8 @@ public class ProductController : AdminBaseController
         if (!ModelState.IsValid)
         {
             ViewData["ProductId"] = dto.ProductId;
-            ViewData["Colors"] = (await _client.ColorsGETAsync(null, null)).Data?.ToList() ?? new List<ProductColor>();
-            ViewData["Sizes"] = (await _client.SizesGETAsync(null, null, null)).Data?.ToList() ?? new List<ProductSize>();
+            ViewData["Colors"] = (await _client.ColorsGETAsync(null, null)).Data?.ToList() ?? new List<ProductColorDto>();
+            ViewData["Sizes"] = (await _client.SizesGETAsync(null, null, null)).Data?.ToList() ?? new List<ProductSizeDto>();
             return View(dto);
         }
 

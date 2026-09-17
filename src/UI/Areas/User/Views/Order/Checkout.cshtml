@@ -105,27 +105,23 @@
 
                     @foreach (var item in Model.OrderDetails)
                     {
-                        var product = item.ProductVariant.Product;
-                        var variant = item.ProductVariant;
                         <div class="d-flex gap-3 align-items-center py-3 @(item != Model.OrderDetails.Last() ? "border-bottom" : "")">
-                            <img src="@ImageUrls.ProductImageThumb(product.MainImageName)" alt="@product.Title"
-                                 class="rounded-3 border flex-shrink-0" style="width:64px;height:64px;object-fit:cover">
+                            <img src="@ImageUrls.ProductImageThumb(item.ProductMainImageName)" alt="@item.ProductTitle"
+                                class="rounded-3 border flex-shrink-0" style="width:64px;height:64px;object-fit:cover">
                             <div class="flex-grow-1 min-w-0">
-                                <div class="fw-bold font-13 text-truncate mb-1">@product.Title</div>
+                                <div class="fw-bold font-13 text-truncate mb-1">@item.ProductTitle</div>
                                 <div class="font-12 text-muted d-flex flex-wrap gap-2">
                                     <span>
                                         <span class="d-inline-block rounded-circle border me-1"
-                                              style="width:9px;height:9px;background:@variant.ColorCode;vertical-align:middle"></span>
-                                        @variant.ColorTitle
+                                            style="width:9px;height:9px;background:@item.ColorCode;vertical-align:middle"></span>
+                                        @item.ColorTitle
                                     </span>
-                                    <span>سایز: @variant.SizeTitle</span>
+                                    <span>سایز: @item.SizeTitle</span>
                                     <span>تعداد: @item.Count</span>
                                 </div>
                             </div>
                             <div class="text-end flex-shrink-0">
-                                <div class="fw-bold text-danger font-13">
-                                    @((product.Price * item.Count).ToString("N0"))
-                                </div>
+                                <div class="fw-bold text-danger font-13">@item.TotalPrice.ToString("N0")</div>
                                 <div class="font-12 text-muted">تومان</div>
                             </div>
                         </div>

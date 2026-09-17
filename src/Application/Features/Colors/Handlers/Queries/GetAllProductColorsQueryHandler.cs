@@ -1,6 +1,7 @@
 // Application/Features/Colors/Handlers/Queries/GetAllProductColorsQueryHandler.cs
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Application.DTOs.Product;
 using Application.Features.Colors.Requests.Queries;
 using Application.Interfaces.Persistence;
 using Domain.Entities.Product;
@@ -17,8 +18,11 @@ public class GetAllProductColorsQueryHandler
         _productColorRepository = productColorRepository;
     }
 
-    public async Task<List<ProductColor>> Handle(GetAllProductColorsQuery query)
+    // GetAllProductColorsQueryHandler.cs
+    public async Task<List<ProductColorDto>> Handle(GetAllProductColorsQuery query)
     {
-        return await _productColorRepository.GetQuery().ToListAsync();
+        return await _productColorRepository.GetQuery()
+            .Select(c => new ProductColorDto { Id = c.Id, Title = c.Title, ColorCode = c.ColorCode })
+            .ToListAsync();
     }
 }

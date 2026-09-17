@@ -1,8 +1,6 @@
-using System;
+// Application/DTOs/Category/FilterCategoryDto.cs
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Domain.Entities.Product;
+using Application.DTOs.Product;
 
 namespace Application.DTOs.Category
 {
@@ -12,7 +10,7 @@ namespace Application.DTOs.Category
         public string? Title { get; set; }
         public string? Url { get; set; }
         public FilterCategoryStatus CategoryStatus { get; set; }
-        public List<ProductCategory>? Data { get; set; }
+        public List<ProductCategoryDto>? Data { get; set; }
 
         public enum FilterCategoryStatus
         {

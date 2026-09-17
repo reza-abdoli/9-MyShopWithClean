@@ -7,7 +7,6 @@ public class CreateProductDto
 {
     [Required]
     public string Title { get; set; }
-    [Required]
     public long BrandId { get; set; }
     [Required]
     public bool IsAvailable { get; set; }

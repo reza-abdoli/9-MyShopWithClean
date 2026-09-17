@@ -16,14 +16,14 @@ public class SelectedCategoriesViewComponent : ViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync(long? thisId, List<long>? selectedCategories, int level = 0)
     {
-        List<ProductCategory> children;
+        List<ProductCategoryDto> children;
         try
         {
             children = (await _client.ChildrenAsync(thisId)).ToList();
         }
         catch (ApiException)
         {
-            children = new List<ProductCategory>();
+            children = new List<ProductCategoryDto>();
         }
 
         var model = new TreeViewCategoriesDto

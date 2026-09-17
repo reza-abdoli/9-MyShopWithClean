@@ -1,6 +1,7 @@
 // Application/Features/Sizes/Handlers/Queries/GetAllProductSizesQueryHandler.cs
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Application.DTOs.Product;
 using Application.Features.Sizes.Requests.Queries;
 using Application.Interfaces.Persistence;
 using Domain.Entities.Product;
@@ -17,8 +18,11 @@ public class GetAllProductSizesQueryHandler
         _productSizeRepository = productSizeRepository;
     }
 
-    public async Task<List<ProductSize>> Handle(GetAllProductSizesQuery query)
+    // GetAllProductSizesQueryHandler.cs
+    public async Task<List<ProductSizeDto>> Handle(GetAllProductSizesQuery query)
     {
-        return await _productSizeRepository.GetQuery().ToListAsync();
+        return await _productSizeRepository.GetQuery()
+            .Select(s => new ProductSizeDto { Id = s.Id, Title = s.Title, SizeType = s.SizeType, Order = s.Order })
+            .ToListAsync();
     }
 }

@@ -1,10 +1,11 @@
 // Application/Features/Orders/Handlers/Queries/OrderDetailQueryHandler.cs
 using System.Threading.Tasks;
 using Application.DTOs.Order;
+using Application.DTOs.Users;
 using Application.Features.Orders.Requests.Queries;
+using Application.Features.Payments.Responses;
 using Application.Interfaces.Persistence;
 using Domain.Entities.Order;
-using Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Orders.Handlers.Queries;
@@ -12,49 +13,63 @@ namespace Application.Features.Orders.Handlers.Queries;
 public class OrderDetailQueryHandler
 {
     private readonly IRepository<Domain.Entities.Order.Order> _orderRepository;
-    private readonly IRepository<OrderDetail> _orderDetailRepository;
-    private readonly IRepository<User> _userRepository;
-    private readonly IRepository<PaymentTransaction> _paymentTransactionRepository;
 
-    public OrderDetailQueryHandler(
-        IRepository<Domain.Entities.Order.Order> orderRepository,
-        IRepository<OrderDetail> orderDetailRepository,
-        IRepository<User> userRepository,
-        IRepository<PaymentTransaction> paymentTransactionRepository)
+    public OrderDetailQueryHandler(IRepository<Domain.Entities.Order.Order> orderRepository)
     {
         _orderRepository = orderRepository;
-        _orderDetailRepository = orderDetailRepository;
-        _userRepository = userRepository;
-        _paymentTransactionRepository = paymentTransactionRepository;
     }
 
     public async Task<OrderDetailDto> Handle(OrderDetailQuery query)
     {
-        var data = await _orderRepository.GetEntityById(query.OrderId);
-
-        return new OrderDetailDto
-        {
-            Address = data.Address,
-            CreateDate = data.CreatedAt,
-            Description = data.Description,
-            Id = data.Id,
-            OrderState = data.OrderState,
-            UserName = data.UserName,
-            TotalPrice = data.TotalPrice,
-            UserId = data.UserId,
-            PostCode = data.PostCode,
-            PostTraceCode = data.PostTraceCode,
-            BankTraceCode = data.TransactionId?.ToString() ?? string.Empty,
-            LastUpdateDate = data.UpdatedAt,
-            DestinationCity = data.DestinationCity,
-            User = await _userRepository.GetEntityById(data.UserId),
-            OrderDetails = await _orderDetailRepository.GetQuery()
-                .Include(d => d.ProductVariant)
-                    .ThenInclude(v => v.Product)
-                .Where(d => d.OrderId == query.OrderId)
-                .ToListAsync(),
-            PaymentTransaction = await _paymentTransactionRepository.GetQuery()
-                .FirstOrDefaultAsync(r => r.OrderId == query.OrderId && r.Status == PaymentStatus.Success)
-        };
+        return await _orderRepository.GetQuery()
+            .Where(o => o.Id == query.OrderId)
+            .Select(o => new OrderDetailDto
+            {
+                Id = o.Id,
+                CreateDate = o.CreatedAt,
+                LastUpdateDate = o.UpdatedAt,
+                UserId = o.UserId,
+                UserName = o.UserName,
+                Address = o.Address,
+                PostCode = o.PostCode,
+                DestinationCity = o.DestinationCity,
+                TotalPrice = o.TotalPrice,
+                Description = o.Description,
+                PostTraceCode = o.PostTraceCode,
+                BankTraceCode = o.TransactionId.HasValue ? o.TransactionId.ToString() : string.Empty,
+                OrderState = o.OrderState,
+                User = new UserSummaryDto
+                {
+                    Id = o.User.Id,
+                    Username = o.User.Username,
+                    FullName = o.User.FullName,
+                    MobileNumber = o.User.MobileNumber,
+                    Email = o.User.Email
+                },
+                PaymentTransaction = o.PaymentTransaction == null ? null : new PaymentTransactionDto
+                {
+                    Id = o.PaymentTransaction.Id,
+                    UserId = o.PaymentTransaction.UserId,
+                    OrderId = o.PaymentTransaction.OrderId,
+                    Amount = o.PaymentTransaction.Amount,
+                    Authority = o.PaymentTransaction.Authority,
+                    Status = o.PaymentTransaction.Status
+                },
+                OrderDetails = o.OrderDetails.Select(d => new OrderItemDto
+                {
+                    Id = d.Id,
+                    ProductVariantId = d.ProductVariantId,
+                    ProductPrice = d.ProductPrice,
+                    TotalPrice = d.TotalPrice,
+                    Count = d.Count,
+                    ProductId = d.ProductVariant.Product.Id,
+                    ProductTitle = d.ProductVariant.Product.Title,
+                    ProductMainImageName = d.ProductVariant.Product.MainImageName,
+                    ColorTitle = d.ProductVariant.ColorTitle,
+                    ColorCode = d.ProductVariant.ColorCode,
+                    SizeTitle = d.ProductVariant.SizeTitle
+                }).ToList()
+            })
+            .FirstOrDefaultAsync();
     }
 }
