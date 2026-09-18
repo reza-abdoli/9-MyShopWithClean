@@ -41,8 +41,8 @@ public class AuthenticateService : IAuthenticateService
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties
             {
-                IsPersistent = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+                IsPersistent = false,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(120)
             };
 
             await _httpContextAccessor.HttpContext!.SignInAsync(

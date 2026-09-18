@@ -22,8 +22,6 @@ public class FilterOrdersQueryHandler
     {
         var filter = query.FilterOrderDto;
         var q = _orderRepository.GetQuery()
-            .Include(o => o.OrderDetails)
-            .Include(o => o.PaymentTransaction)
             .OrderByDescending(d => d.CreatedAt)
             .AsQueryable();
 
@@ -57,10 +55,10 @@ public class FilterOrdersQueryHandler
             q = q.Where(p => EF.Functions.Like(p.UserName, $"%{filter.UserName}%"));
 
         if (filter.TransactionId is > 0)
-            q = q.Where(o => o.TransactionId == filter.TransactionId);
+            q = q.Where(o => o.PaymentTransaction.Id == filter.TransactionId);
 
         if (filter.PaymentRecordId is > 0)
-            q = q.Where(o => o.PaymentTransaction  != null && o.PaymentTransaction.Id == filter.PaymentRecordId);
+            q = q.Where(o => o.PaymentTransaction != null && o.PaymentTransaction.Id == filter.PaymentRecordId);
 
         if (!string.IsNullOrEmpty(filter.DestinationCity))
             q = q.Where(p => EF.Functions.Like(p.DestinationCity, $"%{filter.DestinationCity}%"));
@@ -71,7 +69,39 @@ public class FilterOrdersQueryHandler
         if (filter.UserId is > 0)
             q = q.Where(d => d.UserId == filter.UserId);
 
-        filter.Data = await q.ToListAsync();
+        filter.Data = await q.Select(o => new AdminOrderListItemDto
+        {
+            Id = o.Id,
+            UserId = o.UserId,
+            CreatedAt = o.CreatedAt,
+            UserName = o.UserName,
+            DestinationCity = o.DestinationCity,
+            Address = o.Address,
+            PostCode = o.PostCode,
+            TotalPrice = o.TotalPrice,
+            Description = o.Description,
+            PostTraceCode = o.PostTraceCode,
+            TransactionId = o.TransactionId,
+            PaymentTransactionId = o.PaymentTransaction != null ? o.PaymentTransaction.Id : (long?)null,
+            PaymentDate = o.PaymentDate,
+            OrderState = o.OrderState,
+            OrderDetails = o.OrderDetails.Select(d => new OrderItemDto
+            {
+                Id = d.Id,
+                ProductVariantId = d.ProductVariantId,
+                ProductPrice = d.ProductPrice,
+                TotalPrice = d.TotalPrice,
+                Count = d.Count,
+                ProductId = d.ProductVariant.Product.Id,
+                ProductTitle = d.ProductVariant.Product.Title,
+                ProductMainImageName = d.ProductVariant.Product.MainImageName,
+                ColorTitle = d.ProductVariant.ColorTitle,
+                ColorCode = d.ProductVariant.ColorCode,
+                SizeTitle = d.ProductVariant.SizeTitle,
+                StockCount = d.ProductVariant.StockCount
+            }).ToList()
+        }).ToListAsync();
+
         return filter;
     }
 }

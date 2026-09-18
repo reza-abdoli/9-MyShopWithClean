@@ -175,6 +175,7 @@ public class OrderHelper
         order.OrderState = OrderState.Paid;
         order.PaymentDate = paymentDate;
         order.PaymentTransaction = paymentTransaction;
+        order.TransactionId = paymentTransaction.Id;
         order.TotalPrice = order.OrderDetails.Sum(
         item => item.ProductPrice * item.Count);
     }
