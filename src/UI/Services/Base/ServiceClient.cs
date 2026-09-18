@@ -29,12 +29,12 @@ namespace UI.Services.Base
     {
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<EditUserInfoDTO> EditDetailGETAsync();
+        System.Threading.Tasks.Task<GetEditUserInfoDto> EditDetailGETAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<EditUserInfoDTO> EditDetailGETAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<GetEditUserInfoDto> EditDetailGETAsync(System.Threading.CancellationToken cancellationToken);
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -173,12 +173,12 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FilterColorDto> ColorsGETAsync(string title, System.Collections.Generic.IEnumerable<ProductColor> data);
+        System.Threading.Tasks.Task<FilterColorDto> ColorsGETAsync(string title, System.Collections.Generic.IEnumerable<ProductColorDto> data);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FilterColorDto> ColorsGETAsync(string title, System.Collections.Generic.IEnumerable<ProductColor> data, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<FilterColorDto> ColorsGETAsync(string title, System.Collections.Generic.IEnumerable<ProductColorDto> data, System.Threading.CancellationToken cancellationToken);
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -308,12 +308,12 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ProductListResponseDto> ProductsGETAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<Product> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, string url);
+        System.Threading.Tasks.Task<ProductListResponseDto> ProductsGETAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<ProductListItemDto> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, string url);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ProductListResponseDto> ProductsGETAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<Product> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, string url, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<ProductListResponseDto> ProductsGETAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<ProductListItemDto> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, string url, System.Threading.CancellationToken cancellationToken);
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -344,12 +344,12 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FilterProductDto> FilterAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<Product> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore);
+        System.Threading.Tasks.Task<FilterProductDto> FilterAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<ProductListItemDto> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FilterProductDto> FilterAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<Product> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<FilterProductDto> FilterAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<ProductListItemDto> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, System.Threading.CancellationToken cancellationToken);
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -398,12 +398,12 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FilterSizeDto> SizesGETAsync(string title, string sizeType, System.Collections.Generic.IEnumerable<ProductSize> data);
+        System.Threading.Tasks.Task<FilterSizeDto> SizesGETAsync(string title, string sizeType, System.Collections.Generic.IEnumerable<ProductSizeDto> data);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FilterSizeDto> SizesGETAsync(string title, string sizeType, System.Collections.Generic.IEnumerable<ProductSize> data, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<FilterSizeDto> SizesGETAsync(string title, string sizeType, System.Collections.Generic.IEnumerable<ProductSizeDto> data, System.Threading.CancellationToken cancellationToken);
 
     }
 
@@ -457,7 +457,7 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<EditUserInfoDTO> EditDetailGETAsync()
+        public virtual System.Threading.Tasks.Task<GetEditUserInfoDto> EditDetailGETAsync()
         {
             return EditDetailGETAsync(System.Threading.CancellationToken.None);
         }
@@ -465,7 +465,7 @@ namespace UI.Services.Base
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<EditUserInfoDTO> EditDetailGETAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GetEditUserInfoDto> EditDetailGETAsync(System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -506,7 +506,7 @@ namespace UI.Services.Base
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<EditUserInfoDTO>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<GetEditUserInfoDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -1856,7 +1856,7 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<FilterColorDto> ColorsGETAsync(string title, System.Collections.Generic.IEnumerable<ProductColor> data)
+        public virtual System.Threading.Tasks.Task<FilterColorDto> ColorsGETAsync(string title, System.Collections.Generic.IEnumerable<ProductColorDto> data)
         {
             return ColorsGETAsync(title, data, System.Threading.CancellationToken.None);
         }
@@ -1864,7 +1864,7 @@ namespace UI.Services.Base
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FilterColorDto> ColorsGETAsync(string title, System.Collections.Generic.IEnumerable<ProductColor> data, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<FilterColorDto> ColorsGETAsync(string title, System.Collections.Generic.IEnumerable<ProductColorDto> data, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3134,7 +3134,7 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ProductListResponseDto> ProductsGETAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<Product> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, string url)
+        public virtual System.Threading.Tasks.Task<ProductListResponseDto> ProductsGETAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<ProductListItemDto> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, string url)
         {
             return ProductsGETAsync(title, brandId, categoryId, categoryUrl, colorId, mostPrice, leastPrice, startPrice, endPrice, productOrder, productStatus, data, pageId, pageCount, allEntitiesCount, startPage, endPage, takeEntity, skipEntity, howManyShowPageAfterAndBefore, url, System.Threading.CancellationToken.None);
         }
@@ -3142,7 +3142,7 @@ namespace UI.Services.Base
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ProductListResponseDto> ProductsGETAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<Product> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, string url, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ProductListResponseDto> ProductsGETAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<ProductListItemDto> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, string url, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3678,7 +3678,7 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<FilterProductDto> FilterAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<Product> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore)
+        public virtual System.Threading.Tasks.Task<FilterProductDto> FilterAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<ProductListItemDto> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore)
         {
             return FilterAsync(title, brandId, categoryId, categoryUrl, colorId, mostPrice, leastPrice, startPrice, endPrice, productOrder, productStatus, data, pageId, pageCount, allEntitiesCount, startPage, endPage, takeEntity, skipEntity, howManyShowPageAfterAndBefore, System.Threading.CancellationToken.None);
         }
@@ -3686,7 +3686,7 @@ namespace UI.Services.Base
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FilterProductDto> FilterAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<Product> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<FilterProductDto> FilterAsync(string title, long? brandId, long? categoryId, string categoryUrl, long? colorId, int? mostPrice, int? leastPrice, int? startPrice, int? endPrice, FilterProductOrder? productOrder, FilterProductStatus? productStatus, System.Collections.Generic.IEnumerable<ProductListItemDto> data, int? pageId, int? pageCount, int? allEntitiesCount, int? startPage, int? endPage, int? takeEntity, int? skipEntity, int? howManyShowPageAfterAndBefore, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4231,7 +4231,7 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<FilterSizeDto> SizesGETAsync(string title, string sizeType, System.Collections.Generic.IEnumerable<ProductSize> data)
+        public virtual System.Threading.Tasks.Task<FilterSizeDto> SizesGETAsync(string title, string sizeType, System.Collections.Generic.IEnumerable<ProductSizeDto> data)
         {
             return SizesGETAsync(title, sizeType, data, System.Threading.CancellationToken.None);
         }
@@ -4239,7 +4239,7 @@ namespace UI.Services.Base
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FilterSizeDto> SizesGETAsync(string title, string sizeType, System.Collections.Generic.IEnumerable<ProductSize> data, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<FilterSizeDto> SizesGETAsync(string title, string sizeType, System.Collections.Generic.IEnumerable<ProductSizeDto> data, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4616,7 +4616,7 @@ namespace UI.Services.Base
         public OpenOrderDto Order { get; set; }
 
         [Newtonsoft.Json.JsonProperty("user", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public EditUserInfoDTO User { get; set; }
+        public GetEditUserInfoDto User { get; set; }
 
     }
 
@@ -4850,7 +4850,7 @@ namespace UI.Services.Base
         public string Title { get; set; }
 
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<ProductColor> Data { get; set; }
+        public System.Collections.Generic.ICollection<ProductColorDto> Data { get; set; }
 
     }
 
@@ -4976,7 +4976,7 @@ namespace UI.Services.Base
         public FilterProductStatus ProductStatus { get; set; }
 
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Product> Data { get; set; }
+        public System.Collections.Generic.ICollection<ProductListItemDto> Data { get; set; }
 
     }
 
@@ -5030,7 +5030,34 @@ namespace UI.Services.Base
         public string SizeType { get; set; }
 
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<ProductSize> Data { get; set; }
+        public System.Collections.Generic.ICollection<ProductSizeDto> Data { get; set; }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class GetEditUserInfoDto
+    {
+
+        [Newtonsoft.Json.JsonProperty("userId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long UserId { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("mobileNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string MobileNumber { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("fullName", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string FullName { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Email { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("address", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Address { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("postCode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string PostCode { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("userCity", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string UserCity { get; set; }
 
     }
 
@@ -5436,60 +5463,6 @@ namespace UI.Services.Base
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Product
-    {
-
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public long Id { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("createdAt", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset CreatedAt { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("updatedAt", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset UpdatedAt { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("isDeleted", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsDeleted { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("price", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int Price { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("isAvailable", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsAvailable { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("mainImageName", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string MainImageName { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("shortDescription", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string ShortDescription { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("brandId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public long? BrandId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("brand", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Brand Brand { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("selectedCategories", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<ProductSelectedCategory> SelectedCategories { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("productVariants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<ProductVariant> ProductVariants { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("productGalleries", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<ProductGallery> ProductGalleries { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("productFeatures", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<ProductFeature> ProductFeatures { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class ProductCategory
     {
 
@@ -5564,33 +5537,6 @@ namespace UI.Services.Base
 
         [Newtonsoft.Json.JsonProperty("subCategories", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<ProductCategoryDto> SubCategories { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ProductColor
-    {
-
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public long Id { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("createdAt", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset CreatedAt { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("updatedAt", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset UpdatedAt { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("isDeleted", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsDeleted { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("colorCode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string ColorCode { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("productVariants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<ProductVariant> ProductVariants { get; set; }
 
     }
 
@@ -5736,6 +5682,48 @@ namespace UI.Services.Base
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ProductListItemDto
+    {
+
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long Id { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Title { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("price", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Price { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("isAvailable", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool IsAvailable { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("mainImageName", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string MainImageName { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("shortDescription", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ShortDescription { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("brandId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long? BrandId { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("brandTitle", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string BrandTitle { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("stockCount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int StockCount { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("categoryIds", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<long> CategoryIds { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("categoryTitles", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<string> CategoryTitles { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("availableColors", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<VariantColorDto> AvailableColors { get; set; }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class ProductListResponseDto
     {
 
@@ -5774,36 +5762,6 @@ namespace UI.Services.Base
 
         [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ProductCategory Category { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ProductSize
-    {
-
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public long Id { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("createdAt", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset CreatedAt { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("updatedAt", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset UpdatedAt { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("isDeleted", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsDeleted { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("sizeType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string SizeType { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("order", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int Order { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("productVariants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<ProductVariant> ProductVariants { get; set; }
 
     }
 
@@ -5970,6 +5928,21 @@ namespace UI.Services.Base
 
         [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Email { get; set; }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class VariantColorDto
+    {
+
+        [Newtonsoft.Json.JsonProperty("colorId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long ColorId { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("colorTitle", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ColorTitle { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("colorCode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ColorCode { get; set; }
 
     }
 

@@ -105,7 +105,7 @@ public class ProductController : AdminBaseController
         try
         {
             var image = new FileParameter(vm.MainImage.OpenReadStream(), vm.MainImage.FileName, vm.MainImage.ContentType);
-            await _client.CategoriesPOSTAsync(vm.ParentId, vm.Title, vm.Url, vm.Order, vm.ShowInHome, image);
+            await _client.CategoriesPOSTAsync(vm.ParentId ?? 0, vm.Title, vm.Url, vm.Order, vm.ShowInHome, image);
 
             TempData[SuccessMessage] = SuccessText;
             return RedirectToAction("FilterCategory");

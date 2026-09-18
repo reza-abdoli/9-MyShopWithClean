@@ -13,9 +13,9 @@ namespace Api.Controllers.UserControllers;
 public class AccountController : ApiControllerBase
 {
     [HttpGet("edit-detail")]
-    public async Task<ActionResult<EditUserInfoDTO>> GetEditUserDetail()
+    public async Task<ActionResult<GetEditUserInfoDto>> GetEditUserDetail()
     {
-        var model = await Bus.InvokeAsync<EditUserInfoDTO>(new GetEditUserDetailQuery { UserId = UserId });
+        var model = await Bus.InvokeAsync<GetEditUserInfoDto>(new GetEditUserDetailQuery { UserId = UserId });
         return Ok(model);
     }
 

@@ -1,8 +1,5 @@
-using System;
+// Application/DTOs/Product/FilterSizeDto.cs
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Domain.Entities.Product;
 
 namespace Application.DTOs.Product
 {
@@ -10,6 +7,6 @@ namespace Application.DTOs.Product
     {
         public string? Title { get; set; }
         public string? SizeType { get; set; }
-        public List<ProductSize>? Data { get; set; }= new List<ProductSize>();
+        public List<ProductSizeDto>? Data { get; set; } = new List<ProductSizeDto>();
     }
 }

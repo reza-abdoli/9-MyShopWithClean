@@ -16,10 +16,10 @@ public class GetEditUserDetailQueryHandler
         _userRepository = userRepository;
     }
 
-    public async Task<EditUserInfoDTO> Handle(GetEditUserDetailQuery query)
+    public async Task<GetEditUserInfoDto> Handle(GetEditUserDetailQuery query)
     {
         var user = await _userRepository.GetEntityById(query.UserId);
-        return new EditUserInfoDTO
+        return new GetEditUserInfoDto
         {
             UserId = query.UserId,
             MobileNumber = user.MobileNumber,

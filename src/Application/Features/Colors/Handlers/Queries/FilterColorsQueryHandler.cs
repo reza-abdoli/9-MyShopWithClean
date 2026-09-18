@@ -1,6 +1,5 @@
 // Application/Features/Colors/Handlers/Queries/FilterColorsQueryHandler.cs
 using System.Threading.Tasks;
-using Application.DTOs;
 using Application.DTOs.Product;
 using Application.Features.Colors.Requests.Queries;
 using Application.Interfaces.Persistence;
@@ -28,7 +27,12 @@ public class FilterColorsQueryHandler
         return new FilterColorDto
         {
             Title = filter.Title,
-            Data = await q.ToListAsync()
+            Data = await q.Select(c => new ProductColorDto
+            {
+                Id = c.Id,
+                Title = c.Title,
+                ColorCode = c.ColorCode
+            }).ToListAsync()
         };
     }
 }

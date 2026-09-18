@@ -47,7 +47,7 @@ public class CreateCategoryCommandHandler
             Title = dto.Title,
             IsActive = true,
             Order = dto.Order,
-            ParentId = dto.ParentId,
+            ParentId = dto.ParentId == 0 ? null : dto.ParentId,
             Url = dto.Url,
             ShowInHome = dto.ShowInHome,
             MainImage = imageResult.FileName

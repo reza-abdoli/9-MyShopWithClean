@@ -5,6 +5,7 @@ using Application.Features.Payments.Requests.Commands;
 using Application.Interfaces.Persistence;
 using Domain.Entities.Order;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Payments.Handlers.Commands;
 
@@ -21,7 +22,26 @@ public class CreatePendingTransactionCommandHandler
 
     public async Task<PaymentTransaction> Handle(CreatePendingTransactionCommand command)
     {
-        var transaction = new PaymentTransaction
+        var transaction = await _paymentTransactionRepository.GetQuery().FirstOrDefaultAsync(
+            x => x.UserId == command.UserId &&
+                 x.OrderId == command.OrderId);
+
+        if (transaction != null)
+        {
+            transaction.Status = PaymentStatus.Pending;
+            transaction.UpdatedAt = DateTime.UtcNow;
+            transaction.Authority = command.Authority;
+
+            await _paymentTransactionRepository.SaveChanges();
+
+            _logger.LogInformation(
+                "Existing transaction set to Pending. Id: {Id}, UserId: {UserId}, OrderId: {OrderId}",
+                transaction.Id, command.UserId, command.OrderId);
+
+            return transaction;
+        }
+
+        transaction = new PaymentTransaction
         {
             UserId = command.UserId,
             OrderId = command.OrderId,
@@ -37,7 +57,11 @@ public class CreatePendingTransactionCommandHandler
 
         _logger.LogInformation(
             "Pending transaction created. Id: {Id}, UserId: {UserId}, OrderId: {OrderId}, Amount: {Amount}, Authority: {Authority}",
-            transaction.Id, command.UserId, command.OrderId, command.Amount, command.Authority);
+            transaction.Id,
+            command.UserId,
+            command.OrderId,
+            command.Amount,
+            command.Authority);
 
         return transaction;
     }

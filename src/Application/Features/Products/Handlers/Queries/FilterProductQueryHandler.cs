@@ -24,9 +24,6 @@ public class FilterProductQueryHandler
         var filter = query.FilterProductDto;
         var q = _productRepository.GetQuery()
             .AsNoTracking()
-            .Include(p => p.ProductVariants)
-            .Include(p => p.SelectedCategories)
-                .ThenInclude(p => p.Category)
             .AsQueryable();
 
         switch (filter.ProductOrder)
@@ -98,7 +95,32 @@ public class FilterProductQueryHandler
         }
 
         var page = Page.BuildPage(filter.PageId, await q.CountAsync(), filter.TakeEntity, filter.HowManyShowPageAfterAndBefore);
-        var entitiesForThisPage = await q.GetPageData(page).ToListAsync();
+
+        var entitiesForThisPage = await q.GetPageData(page)
+            .Select(p => new ProductListItemDto
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Price = p.Price,
+                IsAvailable = p.IsAvailable,
+                MainImageName = p.MainImageName,
+                ShortDescription = p.ShortDescription,
+                BrandId = p.BrandId,
+                BrandTitle = p.Brand != null ? p.Brand.Title : null,
+                StockCount = p.ProductVariants.Sum(v => v.StockCount),
+                CategoryIds = p.SelectedCategories.Select(s => s.CategoryId).ToList(),
+                CategoryTitles = p.SelectedCategories.Select(s => s.Category.Title).ToList(),
+                AvailableColors = p.ProductVariants
+                    .GroupBy(v => new { v.ColorId, v.ColorTitle, v.ColorCode })
+                    .Select(g => new VariantColorDto
+                    {
+                        ColorId = g.Key.ColorId,
+                        ColorTitle = g.Key.ColorTitle,
+                        ColorCode = g.Key.ColorCode
+                    })
+                    .ToList()
+            })
+            .ToListAsync();
 
         return filter.SetData(entitiesForThisPage).SetPaging(page);
     }

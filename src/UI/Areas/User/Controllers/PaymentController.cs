@@ -36,7 +36,18 @@ public class PaymentController : UserBaseController
         }
         catch (ApiException ex)
         {
-            TempData[ErrorMessage] = ex.Message;
+            string userMessage;
+            try
+            {
+                var json = System.Text.Json.JsonDocument.Parse(ex.Response);
+                userMessage = json.RootElement.GetProperty("message").GetString();
+            }
+            catch
+            {
+                userMessage = "خطایی در پردازش پرداخت رخ داد.";
+            }
+
+            TempData[ErrorMessage] = userMessage;
             return RedirectToAction("Cart", "Order", new { area = "User" });
         }
     }
@@ -59,7 +70,18 @@ public class PaymentController : UserBaseController
         }
         catch (ApiException ex)
         {
-            TempData[ErrorMessage] = ex.Message;
+            string userMessage;
+            try
+            {
+                var json = System.Text.Json.JsonDocument.Parse(ex.Response);
+                userMessage = json.RootElement.GetProperty("message").GetString();
+            }
+            catch
+            {
+                userMessage = "خطایی در پردازش پرداخت رخ داد.";
+            }
+
+            TempData[ErrorMessage] = userMessage;
             return RedirectToAction("Cart", "Order", new { area = "User" });
         }
     }
@@ -86,8 +108,19 @@ public class PaymentController : UserBaseController
         }
         catch (ApiException ex)
         {
-            TempData[ErrorMessage] = ex.Message;
-            return RedirectToAction("Index", "Home", new { area = "" });
+            string userMessage;
+            try
+            {
+                var json = System.Text.Json.JsonDocument.Parse(ex.Response);
+                userMessage = json.RootElement.GetProperty("message").GetString();
+            }
+            catch
+            {
+                userMessage = "خطایی در پردازش پرداخت رخ داد.";
+            }
+
+            TempData[ErrorMessage] = userMessage;
+            return RedirectToAction("Cart", "Order", new { area = "User" });
         }
     }
 
@@ -103,9 +136,20 @@ public class PaymentController : UserBaseController
         }
         catch (ApiException ex)
         {
-            TempData[ErrorMessage] = ex.Message;
-        }
+            string userMessage;
+            try
+            {
+                var json = System.Text.Json.JsonDocument.Parse(ex.Response);
+                userMessage = json.RootElement.GetProperty("message").GetString();
+            }
+            catch
+            {
+                userMessage = "خطایی در پردازش پرداخت رخ داد.";
+            }
 
-        return RedirectToAction("Index", "Home", new { area = "" });
+            TempData[ErrorMessage] = userMessage;
+        }
+        return RedirectToAction("Cart", "Order", new { area = "User" });
+
     }
 }

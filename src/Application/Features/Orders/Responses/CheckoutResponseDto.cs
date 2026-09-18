@@ -8,5 +8,5 @@ public class CheckoutResponseDto
 {
     public bool NeedsProfile { get; set; }
     public OpenOrderDto? Order { get; set; }
-    public EditUserInfoDTO? User { get; set; }
+    public GetEditUserInfoDto? User { get; set; }
 }

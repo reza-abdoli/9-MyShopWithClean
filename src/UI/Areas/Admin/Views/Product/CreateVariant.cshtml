@@ -1,8 +1,8 @@
 @{
     ViewData["Title"] = "افزودن موجودی";
     var productId = (long)ViewData["ProductId"];
-    var colors    = ViewData["Colors"] as List<ProductColor> ?? new();
-    var sizes     = ViewData["Sizes"]  as List<ProductSize>  ?? new();
+    var colors    = ViewData["Colors"] as List<ProductColorDto> ?? new();
+    var sizes     = ViewData["Sizes"]  as List<ProductSizeDto>  ?? new();
 }
 
 <div class="page-header">

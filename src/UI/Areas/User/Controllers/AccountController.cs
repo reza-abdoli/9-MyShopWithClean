@@ -17,7 +17,16 @@ public class AccountController : UserBaseController
     {
         var model = await _client.EditDetailGETAsync();
         ViewData["ReturnToCheckout"] = returnToCheckout;
-        return View(model);
+        var convertedModel = new EditUserInfoDTO
+        {
+            UserId = model.UserId,
+            MobileNumber = model.MobileNumber,
+            FullName = model.FullName,
+            Email = model.Email,
+            Address = model.Address,
+            PostCode = model.PostCode,
+            UserCity = model.UserCity
+        }; return View(convertedModel);
     }
 
     [HttpPost("edit-user-detail")]

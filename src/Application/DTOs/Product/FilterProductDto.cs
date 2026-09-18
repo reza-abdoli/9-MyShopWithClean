@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.DTOs.Paging;
 
 namespace Application.DTOs.Product
@@ -20,10 +18,9 @@ namespace Application.DTOs.Product
         public int? EndPrice { get; set; }
         public FilterProductOrder ProductOrder { get; set; } = FilterProductOrder.Newest;
         public FilterProductStatus ProductStatus { get; set; }
-        public List<Domain.Entities.Product.Product>? Data { get; set; }
+        public List<ProductListItemDto>? Data { get; set; }
 
-
-        public FilterProductDto SetData(List<Domain.Entities.Product.Product> data)
+        public FilterProductDto SetData(List<ProductListItemDto> data)
         {
             Data = data;
             return this;
@@ -42,7 +39,6 @@ namespace Application.DTOs.Product
             return this;
         }
     }
-
 
     public enum FilterProductStatus
     {

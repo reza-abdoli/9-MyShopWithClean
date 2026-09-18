@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "مدیریت محصولات";
     var brands     = ViewData["Brands"]     as List<Brand>           ?? new();
-    var categories = ViewData["Categories"] as List<ProductCategory>  ?? new();
+    var categories = ViewData["Categories"] as List<ProductCategoryDto> ?? new();
 }
 
 <div class="page-header">
@@ -116,12 +116,7 @@
                                 </a>
                             </td>
                             <td>
-                                @if (product.SelectedCategories != null)
-                                {
-                                    @string.Join("، ", product.SelectedCategories
-                                        .Where(sc => sc.Category != null)
-                                        .Select(sc => sc.Category.Title))
-                                }
+                                @string.Join("، ", product.CategoryTitles)
                             </td>
                             <td>
                                 <span style="font-size:12px">
@@ -129,7 +124,7 @@
                                 </span>
                             </td>
                             <td style="text-align:center">
-                                @(product.ProductVariants?.Sum(v => v.StockCount) ?? 0)
+                                @product.StockCount
                             </td>
                             <td>@product.Id</td>
                             <td>

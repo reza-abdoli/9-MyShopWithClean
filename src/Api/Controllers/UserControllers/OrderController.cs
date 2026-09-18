@@ -46,7 +46,7 @@ public class OrderController : ApiControllerBase
     public async Task<ActionResult<OpenOrderDto?>> Cart()
     {
         var order = await Bus.InvokeAsync<OpenOrderDto?>(new UserOpenOrderDetailQuery { UserId = UserId });
-        return Ok(order);
+        return Ok(order ?? new OpenOrderDto());
     }
 
     [HttpGet("checkout")]
@@ -57,7 +57,7 @@ public class OrderController : ApiControllerBase
             return Ok(new CheckoutResponseDto { NeedsProfile = true });
 
         var order = await Bus.InvokeAsync<OpenOrderDto?>(new UserOpenOrderDetailQuery { UserId = UserId });
-        var userDetail = await Bus.InvokeAsync<EditUserInfoDTO>(new GetEditUserDetailQuery { UserId = UserId });
+        var userDetail = await Bus.InvokeAsync<GetEditUserInfoDto>(new GetEditUserDetailQuery { UserId = UserId });
 
         return Ok(new CheckoutResponseDto { NeedsProfile = false, Order = order, User = userDetail });
     }

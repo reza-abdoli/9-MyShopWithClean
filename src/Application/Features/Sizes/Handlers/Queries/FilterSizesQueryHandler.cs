@@ -1,6 +1,5 @@
 // Application/Features/Sizes/Handlers/Queries/FilterSizesQueryHandler.cs
 using System.Threading.Tasks;
-using Application.DTOs;
 using Application.DTOs.Product;
 using Application.Features.Sizes.Requests.Queries;
 using Application.Interfaces.Persistence;
@@ -33,7 +32,13 @@ public class FilterSizesQueryHandler
         {
             Title = filter.Title,
             SizeType = filter.SizeType,
-            Data = await q.ToListAsync()
+            Data = await q.Select(c => new ProductSizeDto
+            {
+                Id = c.Id,
+                Title = c.Title,
+                SizeType = c.SizeType,
+                Order = c.Order
+            }).ToListAsync()
         };
     }
 }

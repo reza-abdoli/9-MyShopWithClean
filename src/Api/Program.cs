@@ -28,6 +28,8 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+
     });
 // -------------------- لایه‌های Infrastructure --------------------
 builder.Services.AddMemoryCache();
@@ -81,7 +83,7 @@ builder.Services.AddSwaggerGen(options =>
         Title = "MyMvcApp Api",
         Version = "v1"
     });
-    
+
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
