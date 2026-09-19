@@ -14,7 +14,9 @@ public class CreatePendingTransactionCommandHandler
     private readonly IRepository<PaymentTransaction> _paymentTransactionRepository;
     private readonly ILogger<CreatePendingTransactionCommandHandler> _logger;
 
-    public CreatePendingTransactionCommandHandler(IRepository<PaymentTransaction> paymentTransactionRepository, ILogger<CreatePendingTransactionCommandHandler> logger)
+    public CreatePendingTransactionCommandHandler(
+        IRepository<PaymentTransaction> paymentTransactionRepository,
+        ILogger<CreatePendingTransactionCommandHandler> logger)
     {
         _paymentTransactionRepository = paymentTransactionRepository;
         _logger = logger;
@@ -22,16 +24,22 @@ public class CreatePendingTransactionCommandHandler
 
     public async Task<PaymentTransaction> Handle(CreatePendingTransactionCommand command)
     {
-        var transaction = await _paymentTransactionRepository.GetQuery().FirstOrDefaultAsync(
-            x => x.UserId == command.UserId &&
-                 x.OrderId == command.OrderId);
+        // فقط برای پرداخت سفارش، رکورد قبلی همون سفارش دوباره استفاده می‌شه (رابطه‌ی یک‌به‌یک)
+        PaymentTransaction? transaction = null;
+        if (command.OrderId != null)
+        {
+            transaction = await _paymentTransactionRepository.GetQuery().FirstOrDefaultAsync(
+                x => x.UserId == command.UserId && x.OrderId == command.OrderId);
+        }
 
         if (transaction != null)
         {
             transaction.Status = PaymentStatus.Pending;
+            transaction.Amount = command.Amount;
             transaction.UpdatedAt = DateTime.UtcNow;
             transaction.Authority = command.Authority;
 
+            _paymentTransactionRepository.UpdateEntity(transaction);
             await _paymentTransactionRepository.SaveChanges();
 
             _logger.LogInformation(
@@ -56,12 +64,8 @@ public class CreatePendingTransactionCommandHandler
         await _paymentTransactionRepository.SaveChanges();
 
         _logger.LogInformation(
-            "Pending transaction created. Id: {Id}, UserId: {UserId}, OrderId: {OrderId}, Amount: {Amount}, Authority: {Authority}",
-            transaction.Id,
-            command.UserId,
-            command.OrderId,
-            command.Amount,
-            command.Authority);
+            "Pending transaction created. Id: {Id}, UserId: {UserId}, OrderId: {OrderId}, Amount: {Amount}",
+            transaction.Id, command.UserId, command.OrderId, command.Amount);
 
         return transaction;
     }

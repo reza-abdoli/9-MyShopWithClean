@@ -18,7 +18,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
-    <PackageReference Include="WolverineFx" Version="6.36.0" />
+    <PackageReference Include="WolverineFx" Version="6.37.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.5-beta1" />
   </ItemGroup>

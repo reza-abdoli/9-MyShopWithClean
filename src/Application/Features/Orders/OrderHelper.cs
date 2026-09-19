@@ -1,4 +1,4 @@
-// Application/Features/Order/OrderHelper.cs
+// Application/Features/Orders/OrderHelper.cs
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -102,6 +102,8 @@ public class OrderHelper
         return order;
     }
 
+    // ---------- مسیر پرداخت: هیچ‌کدوم از این متدها SaveChanges نمی‌زنن ----------
+
     public void ApplyCurrentPriceToOrderDetail(OrderDetail item)
     {
         var currentProductPrice = item.ProductVariant.Product.Price;
@@ -122,38 +124,18 @@ public class OrderHelper
         });
     }
 
-    public async Task DeductStockWithRetry(OrderDetail item, int maxRetries = 5)
+    public Task DeductStock(OrderDetail item)
     {
-        for (int attempt = 1; attempt <= maxRetries; attempt++)
-        {
-            var variant = await _variantRepository.GetEntityById(item.ProductVariantId);
-            if (variant == null)
-                throw new InvalidOperationException($"Product variant {item.ProductVariantId} was not found.");
+        var variant = item.ProductVariant
+            ?? throw new InvalidOperationException($"Product variant {item.ProductVariantId} was not found.");
 
-            if (variant.StockCount < item.Count)
-                throw new InvalidOperationException($"Insufficient stock for product '{item.ProductVariant.Product.Title}'.");
+        if (variant.StockCount < item.Count)
+            throw new InvalidOperationException($"Insufficient stock for product '{variant.Product.Title}'.");
 
-            variant.StockCount -= item.Count;
-            _variantRepository.UpdateEntity(variant);
+        variant.StockCount -= item.Count;
+        _variantRepository.UpdateEntity(variant);
 
-            try
-            {
-                await _variantRepository.SaveChanges();
-                return;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                foreach (var entry in ex.Entries)
-                    entry.State = EntityState.Detached;
-
-                _logger.LogWarning(
-                    "Concurrency conflict on stock deduction, retrying. ProductVariantId: {ProductVariantId}, Attempt: {Attempt}",
-                    item.ProductVariantId, attempt);
-            }
-        }
-
-        throw new InvalidOperationException(
-            $"Could not deduct stock for variant {item.ProductVariantId} after {maxRetries} attempts due to concurrent updates.");
+        return Task.CompletedTask;
     }
 
     public async Task ApplyShippingInfoFromUser(Domain.Entities.Order.Order order, long userId)
@@ -168,16 +150,43 @@ public class OrderHelper
     }
 
     public void FinalizeOrderAsPaid(
-        Order order,
+        Domain.Entities.Order.Order order,
         PaymentTransaction paymentTransaction,
         DateTime paymentDate)
     {
         order.OrderState = OrderState.Paid;
         order.PaymentDate = paymentDate;
         order.PaymentTransaction = paymentTransaction;
-        order.TransactionId = paymentTransaction.Id;
-        order.TotalPrice = order.OrderDetails.Sum(
-        item => item.ProductPrice * item.Count);
+
+        // برای رکورد جدید (پرداخت کیف‌پول) Id هنوز 0 است و نباید توی ستون ساده‌ی TransactionId بره
+        if (paymentTransaction.Id != 0)
+            order.TransactionId = paymentTransaction.Id;
+
+        order.TotalPrice = order.OrderDetails.Sum(i => i.ProductPrice * i.Count);
     }
 
+    /// قیمت‌ها، ثبت فروش، کسر موجودی انبار، آدرس و نهایی‌سازی سفارش. همه فقط در حافظه.
+    public async Task ApplyPaymentAsync(
+        Domain.Entities.Order.Order order, PaymentTransaction paymentTx, DateTime now)
+    {
+        foreach (var item in order.OrderDetails)
+        {
+            ApplyCurrentPriceToOrderDetail(item);
+            await RecordProductSell(item, order.Id, now);
+            await DeductStock(item);
+        }
+
+        await ApplyShippingInfoFromUser(order, order.UserId);
+        FinalizeOrderAsPaid(order, paymentTx, now);
+    }
+
+    public void EnsurePaymentMatchesOrder(PaymentTransaction paymentTx, Domain.Entities.Order.Order order)
+    {
+        if (paymentTx.UserId != order.UserId)
+            throw new InvalidOperationException("Payment transaction does not belong to the current user.");
+
+        if (paymentTx.OrderId != null && paymentTx.OrderId != order.Id)
+            throw new InvalidOperationException(
+                $"Payment transaction {paymentTx.Id} is already associated with another order.");
+    }
 }
