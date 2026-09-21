@@ -17,6 +17,7 @@ using Wolverine.EntityFrameworkCore;
 using Wolverine.Kafka;
 using Wolverine.SqlServer;
 using KafkaContracts;
+using Application.Features.Orders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,8 +62,9 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddFileStorageServices();
-builder.Services.AddScoped<OnlinePaymentRefunder>();      // جدید
-
+// builder.Services.AddScoped<OnlinePaymentRefunder>();      // جدید
+builder.Services.AddScoped<IOrderHelper, OrderHelper>();
+builder.Services.AddScoped<IOnlinePaymentRefunder, OnlinePaymentRefunder>();
 // -------------------- JWT Authentication --------------------
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();

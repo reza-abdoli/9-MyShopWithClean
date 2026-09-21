@@ -11,11 +11,11 @@ namespace Application.Features.Orders.Handlers.Queries;
 public class UserOpenOrderDetailQueryHandler
 {
     private readonly IRepository<Domain.Entities.Order.Order> _orderRepository;
-    private readonly OrderHelper _orderHelper;
+    private readonly IOrderHelper _orderHelper;
 
     public UserOpenOrderDetailQueryHandler(
         IRepository<Domain.Entities.Order.Order> orderRepository,
-        OrderHelper orderHelper)
+        IOrderHelper orderHelper)
     {
         _orderRepository = orderRepository;
         _orderHelper = orderHelper;

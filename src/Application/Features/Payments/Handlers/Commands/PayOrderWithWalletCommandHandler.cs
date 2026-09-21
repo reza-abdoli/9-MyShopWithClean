@@ -18,7 +18,7 @@ public class PayOrderWithWalletCommandHandler
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<Domain.Entities.Order.Order> _orderRepository;
     private readonly IRepository<PaymentTransaction> _paymentRepository;
-    private readonly OrderHelper _orderHelper;
+    private readonly IOrderHelper _orderHelper;
     private readonly IOutboxUnitOfWork _outbox;
     private readonly ILogger<PayOrderWithWalletCommandHandler> _logger;
 
@@ -26,7 +26,7 @@ public class PayOrderWithWalletCommandHandler
         IRepository<User> userRepository,
         IRepository<Domain.Entities.Order.Order> orderRepository,
         IRepository<PaymentTransaction> paymentRepository,
-        OrderHelper orderHelper,
+        IOrderHelper orderHelper,
         IOutboxUnitOfWork outbox,
         ILogger<PayOrderWithWalletCommandHandler> logger)
     {
@@ -42,7 +42,6 @@ public class PayOrderWithWalletCommandHandler
     {
         try
         {
-            // ---- مرحله ۱: فقط خواندن و تغییر در حافظه؛ هیچ Save ای اینجا نیست ----
             var user = await _userRepository.GetEntityById(command.UserId);
             if (user == null)
             {
@@ -62,7 +61,7 @@ public class PayOrderWithWalletCommandHandler
             if (user.Balance < total)
             {
                 _logger.LogWarning("Wallet payment rejected: insufficient balance. UserId: {UserId}", command.UserId);
-                return false; // چیزی save نشده، پس رکورد ناقصی هم نمی‌مونه
+                return false; 
             }
 
             // هر سفارش فقط یک PaymentTransaction دارد (رابطه‌ی یک‌به‌یک)؛ رکورد قبلی را دوباره استفاده کن
@@ -90,8 +89,7 @@ public class PayOrderWithWalletCommandHandler
             await _orderHelper.ApplyPaymentAsync(order, paymentTx, now);
             _orderRepository.UpdateEntity(order);
 
-            // ---- مرحله ۲: پیام SMS داخل Outbox (هنوز ارسال نشده) ----
-            if (!string.IsNullOrWhiteSpace(user.MobileNumber)) // اسم واقعی پراپرتی موبایل
+            if (!string.IsNullOrWhiteSpace(user.MobileNumber))
             {
                 await _outbox.PublishAsync(new SendSmsCommand
                 {
@@ -100,7 +98,6 @@ public class PayOrderWithWalletCommandHandler
                 });
             }
 
-            // ---- مرحله ۳: تنها commit؛ دیتابیس و Outbox با هم ----
             await _outbox.CommitAsync();
 
             _logger.LogInformation("Wallet payment succeeded. UserId: {UserId}, OrderId: {OrderId}",

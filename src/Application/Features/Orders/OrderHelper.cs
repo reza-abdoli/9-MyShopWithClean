@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Orders;
 
-public class OrderHelper
+public class OrderHelper : IOrderHelper
 {
     private readonly IRepository<Order> _orderRepository;
     private readonly IRepository<OrderDetail> _orderDetailRepository;

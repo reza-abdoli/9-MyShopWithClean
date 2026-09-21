@@ -19,7 +19,7 @@ public class FinalizeOnlineOrderPaymentCommandHandler
     private readonly IRepository<PaymentTransaction> _paymentRepository;
     private readonly IRepository<Domain.Entities.Order.Order> _orderRepository;
     private readonly IRepository<User> _userRepository;
-    private readonly OrderHelper _orderHelper;
+    private readonly IOrderHelper _orderHelper;
     private readonly IOutboxUnitOfWork _outbox;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<FinalizeOnlineOrderPaymentCommandHandler> _logger;
@@ -28,7 +28,7 @@ public class FinalizeOnlineOrderPaymentCommandHandler
         IRepository<PaymentTransaction> paymentRepository,
         IRepository<Domain.Entities.Order.Order> orderRepository,
         IRepository<User> userRepository,
-        OrderHelper orderHelper,
+        IOrderHelper orderHelper,
         IOutboxUnitOfWork outbox,
         IServiceScopeFactory scopeFactory,
         ILogger<FinalizeOnlineOrderPaymentCommandHandler> logger)
@@ -98,7 +98,7 @@ public class FinalizeOnlineOrderPaymentCommandHandler
             try
             {
                 using var scope = _scopeFactory.CreateScope();
-                var refunder = scope.ServiceProvider.GetRequiredService<OnlinePaymentRefunder>();
+                var refunder = scope.ServiceProvider.GetRequiredService<IOnlinePaymentRefunder>();
                 await refunder.RefundToWalletAsync(paymentTxId);
                 return false; // برگشت پول انجام شد (یا تراکنش دیگه Pending نبود)، ولی سفارش نهایی نشد
             }

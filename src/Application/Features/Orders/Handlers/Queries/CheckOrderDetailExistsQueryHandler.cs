@@ -6,9 +6,9 @@ namespace Application.Features.Orders.Handlers.Queries;
 
 public class CheckOrderDetailExistsQueryHandler
 {
-    private readonly OrderHelper _orderHelper;
+    private readonly IOrderHelper _orderHelper;
 
-    public CheckOrderDetailExistsQueryHandler(OrderHelper orderHelper)
+    public CheckOrderDetailExistsQueryHandler(IOrderHelper orderHelper)
     {
         _orderHelper = orderHelper;
     }

@@ -14,14 +14,14 @@ public class AddProductToOrderCommandHandler
     private readonly IRepository<Product> _productRepository;
     private readonly IRepository<ProductVariant> _variantRepository;
     private readonly IRepository<OrderDetail> _orderDetailRepository;
-    private readonly OrderHelper _orderHelper;
+    private readonly IOrderHelper _orderHelper;
     private readonly ILogger<AddProductToOrderCommandHandler> _logger;
 
     public AddProductToOrderCommandHandler(
         IRepository<Product> productRepository,
         IRepository<ProductVariant> variantRepository,
         IRepository<OrderDetail> orderDetailRepository,
-        OrderHelper orderHelper,
+        IOrderHelper orderHelper,
         ILogger<AddProductToOrderCommandHandler> logger)
     {
         _productRepository = productRepository;

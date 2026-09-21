@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Payments;
 
-public class OnlinePaymentRefunder
+public class OnlinePaymentRefunder : IOnlinePaymentRefunder
 {
     private readonly IRepository<PaymentTransaction> _paymentRepository;
     private readonly IRepository<User> _userRepository;

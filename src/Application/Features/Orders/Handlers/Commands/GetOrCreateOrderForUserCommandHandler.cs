@@ -6,9 +6,9 @@ namespace Application.Features.Orders.Handlers.Commands;
 
 public class GetOrCreateOrderForUserCommandHandler
 {
-    private readonly OrderHelper _orderHelper;
+    private readonly IOrderHelper _orderHelper;
 
-    public GetOrCreateOrderForUserCommandHandler(OrderHelper orderHelper)
+    public GetOrCreateOrderForUserCommandHandler(IOrderHelper orderHelper)
     {
         _orderHelper = orderHelper;
     }
