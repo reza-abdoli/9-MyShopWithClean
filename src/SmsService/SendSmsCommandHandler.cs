@@ -1,8 +1,7 @@
-// Application/Features/Notifications/Handlers/Commands/SendSmsCommandHandler.cs
-using Application.Features.Notifications.Requests.Commands;
-using Application.Interfaces.Sms;
+// src/SmsService/SendSmsCommandHandler.cs
+using KafkaContracts.Notifications;
 
-namespace Application.Features.Notifications.Handlers.Commands;
+namespace SmsService;
 
 public class SendSmsCommandHandler
 {

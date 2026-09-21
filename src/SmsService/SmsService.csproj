@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\KafkaContracts\KafkaContracts.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-SmsService-ee4a2f50-1969-4eb9-bb0c-8079cb0852e0</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+    <PackageReference Include="WolverineFx" Version="6.37.0" />
+    <PackageReference Include="WolverineFx.Kafka" Version="6.37.0" />
+    <PackageReference Include="WolverineFx.RuntimeCompilation" Version="6.37.0" />
+  </ItemGroup>
+
+
+</Project>

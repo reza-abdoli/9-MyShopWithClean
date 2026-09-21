@@ -5,8 +5,8 @@ using Api.Common;
 using Api.Extensions;
 using Application;
 using Application.Features.Payments;          // جدید
+using KafkaContracts.Notifications;
 using FileStorage;
-using Infrastructure.Sms;                     // جدید
 using JasperFx.Resources;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -14,13 +14,17 @@ using Microsoft.OpenApi;
 using Persistence;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
+using Wolverine.Kafka;
 using Wolverine.SqlServer;
+using KafkaContracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddLog4Net("log4net.config");
 
 // -------------------- Wolverine --------------------
+var kafkaAddress = builder.Configuration.GetValue<string>("KafkaAddress")
+    ?? throw new InvalidOperationException("KafkaAddress تنظیم نشده است.");
 builder.Host.UseWolverine(opts =>
 {
     opts.Discovery.IncludeAssembly(typeof(ApplicationAssemblyMarker).Assembly);
@@ -31,11 +35,14 @@ builder.Host.UseWolverine(opts =>
 
     opts.UseEntityFrameworkCoreTransactions();
 
-    // پیام‌های صف محلی (مثل SendSmsCommand) توی دیتابیس پایدار می‌شن
-    opts.Policies.UseDurableLocalQueues();
+    // اتصال به Kafka
+    opts.UseKafka(kafkaAddress).AutoProvision();
 
-    // حذف شد: AddDbContextWithWolverineIntegration (رفت توی Persistence)
-    // حذف شد: AutoApplyTransactions (commit رو صریح خودمون انجام می‌دیم)
+    // هر SendSmsCommand به topic با اسم sms می‌ره،
+    // و چون UseDurableOutbox زدیم، اول توی SQL Server و توی همون تراکنش ذخیره می‌شه
+    opts.PublishMessage<SendSmsCommand>()
+        .ToKafkaTopic(Topics.Sms)
+        .UseDurableOutbox();
 });
 
 // جدول‌های schema به اسم wolverine رو موقع استارت می‌سازه
@@ -54,7 +61,6 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddFileStorageServices();
-builder.Services.AddSmsServices();                        // جدید
 builder.Services.AddScoped<OnlinePaymentRefunder>();      // جدید
 
 // -------------------- JWT Authentication --------------------

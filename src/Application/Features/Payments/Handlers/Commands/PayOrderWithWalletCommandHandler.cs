@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Application.Features.Notifications.Requests.Commands;
+using KafkaContracts.Notifications;
 using Application.Features.Orders;
 using Application.Features.Payments.Requests.Commands;
 using Application.Interfaces.Persistence;

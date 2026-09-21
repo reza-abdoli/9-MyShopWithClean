@@ -1,7 +1,7 @@
 // Application/Features/Payments/OnlinePaymentRefunder.cs
 using System;
 using System.Threading.Tasks;
-using Application.Features.Notifications.Requests.Commands;
+using KafkaContracts.Notifications;
 using Application.Interfaces.Persistence;
 using Domain.Entities.Order;
 using Domain.Entities.Users;

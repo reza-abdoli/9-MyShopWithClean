@@ -1,5 +1,5 @@
-// Application/Interfaces/Sms/ISmsSender.cs
-namespace Application.Interfaces.Sms;
+// src/SmsService/ISmsSender.cs
+namespace SmsService;
 
 public interface ISmsSender
 {

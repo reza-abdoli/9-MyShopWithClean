@@ -1,7 +1,7 @@
 // Application/Features/Payments/Handlers/Commands/DepositWalletBalanceCommandHandler.cs
 using System;
 using System.Threading.Tasks;
-using Application.Features.Notifications.Requests.Commands;
+using KafkaContracts.Notifications;
 using Application.Features.Payments.Requests.Commands;
 using Application.Interfaces.Persistence;
 using Domain.Entities.Order;
