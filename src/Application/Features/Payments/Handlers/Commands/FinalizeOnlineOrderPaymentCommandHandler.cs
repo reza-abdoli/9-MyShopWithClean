@@ -70,7 +70,7 @@ public class FinalizeOnlineOrderPaymentCommandHandler
             _orderRepository.UpdateEntity(order);
 
             var user = await _userRepository.GetEntityById(paymentTx.UserId);
-            if (!string.IsNullOrWhiteSpace(user?.MobileNumber)) // اسم واقعی پراپرتی موبایل
+            if (!string.IsNullOrWhiteSpace(user?.MobileNumber)) 
             {
                 await _outbox.PublishAsync(new SendSmsCommand
                 {

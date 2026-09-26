@@ -55,7 +55,6 @@ public class PayOrderWithWalletCommandHandler
 
             var now = DateTime.UtcNow;
 
-            // مبلغ واقعی با قیمت فعلی محصولات (نه مبلغی که کنترلر دیده)
             var total = order.OrderDetails.Sum(i => i.ProductVariant.Product.Price * i.Count);
 
             if (user.Balance < total)
@@ -64,7 +63,6 @@ public class PayOrderWithWalletCommandHandler
                 return false; 
             }
 
-            // هر سفارش فقط یک PaymentTransaction دارد (رابطه‌ی یک‌به‌یک)؛ رکورد قبلی را دوباره استفاده کن
             var paymentTx = await _paymentRepository.GetQuery()
                 .FirstOrDefaultAsync(t => t.OrderId == order.Id);
             var isNew = paymentTx == null;
