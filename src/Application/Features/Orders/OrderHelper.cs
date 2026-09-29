@@ -102,8 +102,6 @@ public class OrderHelper : IOrderHelper
         return order;
     }
 
-    // ---------- مسیر پرداخت: هیچ‌کدوم از این متدها SaveChanges نمی‌زنن ----------
-
     public void ApplyCurrentPriceToOrderDetail(OrderDetail item)
     {
         var currentProductPrice = item.ProductVariant.Product.Price;
@@ -152,22 +150,25 @@ public class OrderHelper : IOrderHelper
     public void FinalizeOrderAsPaid(
         Domain.Entities.Order.Order order,
         PaymentTransaction paymentTransaction,
-        DateTime paymentDate)
+        DateTime paymentDate,
+        string referenceCode)
     {
         order.OrderState = OrderState.Paid;
         order.PaymentDate = paymentDate;
-        order.PaymentTransaction = paymentTransaction;
+        order.TransactionCode = referenceCode;
 
-        // برای رکورد جدید (پرداخت کیف‌پول) Id هنوز 0 است و نباید توی ستون ساده‌ی TransactionId بره
+        // فقط برای پرداخت آنلاین معنا داره؛ برای کیف‌پول paymentTransaction فقط یک placeholder با Id=0 است
         if (paymentTransaction.Id != 0)
+        {
+            order.PaymentTransaction = paymentTransaction;
             order.TransactionId = paymentTransaction.Id;
+        }
 
         order.TotalPrice = order.OrderDetails.Sum(i => i.ProductPrice * i.Count);
     }
 
-    /// قیمت‌ها، ثبت فروش، کسر موجودی انبار، آدرس و نهایی‌سازی سفارش. همه فقط در حافظه.
     public async Task ApplyPaymentAsync(
-        Domain.Entities.Order.Order order, PaymentTransaction paymentTx, DateTime now)
+        Domain.Entities.Order.Order order, PaymentTransaction paymentTx, DateTime now, string referenceCode)
     {
         foreach (var item in order.OrderDetails)
         {
@@ -177,7 +178,7 @@ public class OrderHelper : IOrderHelper
         }
 
         await ApplyShippingInfoFromUser(order, order.UserId);
-        FinalizeOrderAsPaid(order, paymentTx, now);
+        FinalizeOrderAsPaid(order, paymentTx, now, referenceCode);
     }
 
     public void EnsurePaymentMatchesOrder(PaymentTransaction paymentTx, Domain.Entities.Order.Order order)

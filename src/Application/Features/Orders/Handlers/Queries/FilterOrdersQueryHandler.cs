@@ -60,6 +60,10 @@ public class FilterOrdersQueryHandler
         if (filter.PaymentRecordId is > 0)
             q = q.Where(o => o.PaymentTransaction != null && o.PaymentTransaction.Id == filter.PaymentRecordId);
 
+        // ← جدید: جست‌وجوی ادمین با کد تراکنش (هم آنلاین هم کیف‌پول)
+        if (!string.IsNullOrEmpty(filter.TransactionCode))
+            q = q.Where(o => o.TransactionCode != null && EF.Functions.Like(o.TransactionCode, $"%{filter.TransactionCode}%"));
+
         if (!string.IsNullOrEmpty(filter.DestinationCity))
             q = q.Where(p => EF.Functions.Like(p.DestinationCity, $"%{filter.DestinationCity}%"));
 
@@ -82,6 +86,7 @@ public class FilterOrdersQueryHandler
             Description = o.Description,
             PostTraceCode = o.PostTraceCode,
             TransactionId = o.TransactionId,
+            TransactionCode = o.TransactionCode,   // ← جدید
             PaymentTransactionId = o.PaymentTransaction != null ? o.PaymentTransaction.Id : (long?)null,
             PaymentDate = o.PaymentDate,
             OrderState = o.OrderState,

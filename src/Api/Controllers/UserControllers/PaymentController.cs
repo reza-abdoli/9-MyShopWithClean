@@ -6,6 +6,7 @@ using Application.Features.Payments.Requests.Commands;
 using Application.Features.Payments.Requests.Queries;
 using Application.Features.Payments.Responses;
 using Application.Features.Users.Requests.Queries;
+using KafkaContracts.Payments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,48 +35,97 @@ public class PaymentController : ApiControllerBase
             if (openOrder.TotalCartPrice() > balance)
                 return BadRequest(new { message = "موجودی کیف پول شما کافی نیست." });
 
-            var isSuccess = await Bus.InvokeAsync<bool>(new PayOrderWithWalletCommand
-            {
-                UserId = UserId,
-                TotalCartPrice = openOrder.TotalCartPrice(),
-                OrderId = openOrder.OrderId
-            });
+            var walletPaymentId = Guid.NewGuid();
 
-            return isSuccess
-                ? Ok(new PayOrderResponseDto { WalletPayment = true, Success = true })
-                : BadRequest(new { message = "خطایی در پردازش پرداخت یا موجودی انبار رخ داد." });
+            try
+            {
+                await Bus.InvokeAsync(new StartWalletPaymentCommand
+                {
+                    PaymentId = walletPaymentId,
+                    UserId = UserId,
+                    OrderId = openOrder.OrderId,
+                    Amount = openOrder.TotalCartPrice()
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
+            var walletDeadline = DateTime.UtcNow.AddSeconds(3);
+            while (DateTime.UtcNow < walletDeadline)
+            {
+                await Task.Delay(300, HttpContext.RequestAborted);
+
+                var walletStatus = await Bus.InvokeAsync<WalletPaymentStatusDto>(
+                    new GetWalletPaymentStatusQuery { PaymentId = walletPaymentId, UserId = UserId });
+
+                if (walletStatus.Status == "Succeeded")
+                    return Ok(new PayOrderResponseDto { WalletPayment = true, Success = true, PaymentId = walletPaymentId });
+
+                if (walletStatus.Status == "Failed")
+                    return BadRequest(new { message = walletStatus.Message });
+            }
+
+            return Ok(new PayOrderResponseDto { WalletPayment = true, Pending = true, PaymentId = walletPaymentId });
         }
 
-        var authority = Guid.NewGuid().ToString("N");
-        await Bus.InvokeAsync(new CreatePendingTransactionCommand
+        // ---- پرداخت آنلاین ----
+        var paymentId = Guid.NewGuid();
+
+        await Bus.InvokeAsync(new StartOnlinePaymentCommand
         {
+            PaymentId = paymentId,
             UserId = UserId,
             OrderId = openOrder.OrderId,
-            Amount = openOrder.TotalCartPrice(),
-            Authority = authority
+            Amount = openOrder.TotalCartPrice()
         });
 
-        return Ok(new PayOrderResponseDto { WalletPayment = false, Authority = authority, Order = openOrder });
+        return Ok(new PayOrderResponseDto
+        {
+            WalletPayment = false,
+            Authority = paymentId.ToString("N"),
+            PaymentId = paymentId,
+            Order = openOrder
+        });
+    }
+
+    [HttpGet("wallet-status")]
+    public async Task<ActionResult<WalletPaymentStatusDto>> WalletStatus(Guid paymentId)
+    {
+        var status = await Bus.InvokeAsync<WalletPaymentStatusDto>(
+            new GetWalletPaymentStatusQuery { PaymentId = paymentId, UserId = UserId });
+        return Ok(status);
     }
 
     [HttpPost("pay-order-callback")]
-    public async Task<ActionResult<bool>> PayOrderCallback(string authority, bool isSuccess)
+    public async Task<ActionResult<PayOrderResponseDto>> PayOrderCallback(string authority, bool isSuccess)
     {
-        var pendingTransaction = await Bus.InvokeAsync<Domain.Entities.Order.PaymentTransaction?>(new GetTransactionByAuthorityQuery { Authority = authority });
-        if (pendingTransaction == null)
+        if (!Guid.TryParse(authority, out var paymentId))
             return BadRequest(new { message = "تراکنش نامعتبر است." });
 
+        await Bus.InvokeAsync(new MarkOnlinePaymentResultCommand(
+            paymentId, isSuccess, isSuccess ? null : "کاربر پرداخت را در درگاه بانک لغو کرد."));
+
         if (!isSuccess)
-        {
-            await Bus.InvokeAsync(new MarkTransactionAsFailedCommand { TransactionId = pendingTransaction.Id });
             return BadRequest(new { message = "پرداخت شما ناموفق بود." });
+
+        var deadline = DateTime.UtcNow.AddSeconds(3);
+        while (DateTime.UtcNow < deadline)
+        {
+            await Task.Delay(300, HttpContext.RequestAborted);
+
+            var status = await Bus.InvokeAsync<WalletPaymentStatusDto>(
+                new GetWalletPaymentStatusQuery { PaymentId = paymentId, UserId = UserId });
+
+            if (status.Status == "Succeeded")
+                return Ok(new PayOrderResponseDto { WalletPayment = false, Success = true, PaymentId = paymentId });
+
+            if (status.Status == "Failed")
+                return BadRequest(new { message = status.Message });
         }
 
-        var isFinalized = await Bus.InvokeAsync<bool>(new FinalizeOnlineOrderPaymentCommand { PaymentTransaction = pendingTransaction });
-
-        return isFinalized
-            ? Ok(true)
-            : BadRequest(new { message = "خطا در نهایی‌سازی سفارش. در صورت کسر مبلغ، به کیف پول برگردانده شد." });
+        return Ok(new PayOrderResponseDto { WalletPayment = false, Pending = true, PaymentId = paymentId });
     }
 
     [HttpPost("add-balance")]

@@ -245,12 +245,12 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FilterOrderDto> OrdersAsync(long? userId, int? minimumPrice, string userName, string destinationCity, long? transactionId, long? paymentRecordId, FilterOrderState? filterOrderState, System.Collections.Generic.IEnumerable<AdminOrderListItemDto> data);
+        System.Threading.Tasks.Task<FilterOrderDto> OrdersAsync(long? userId, int? minimumPrice, string userName, string destinationCity, long? transactionId, long? paymentRecordId, FilterOrderState? filterOrderState, System.Collections.Generic.IEnumerable<AdminOrderListItemDto> data, string transactionCode);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FilterOrderDto> OrdersAsync(long? userId, int? minimumPrice, string userName, string destinationCity, long? transactionId, long? paymentRecordId, FilterOrderState? filterOrderState, System.Collections.Generic.IEnumerable<AdminOrderListItemDto> data, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<FilterOrderDto> OrdersAsync(long? userId, int? minimumPrice, string userName, string destinationCity, long? transactionId, long? paymentRecordId, FilterOrderState? filterOrderState, System.Collections.Generic.IEnumerable<AdminOrderListItemDto> data, string transactionCode, System.Threading.CancellationToken cancellationToken);
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -281,12 +281,21 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<bool> PayOrderCallbackAsync(string authority, bool? isSuccess);
+        System.Threading.Tasks.Task<WalletPaymentStatusDto> WalletStatusAsync(System.Guid? paymentId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<bool> PayOrderCallbackAsync(string authority, bool? isSuccess, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<WalletPaymentStatusDto> WalletStatusAsync(System.Guid? paymentId, System.Threading.CancellationToken cancellationToken);
+
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<PayOrderResponseDto> PayOrderCallbackAsync(string authority, bool? isSuccess);
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<PayOrderResponseDto> PayOrderCallbackAsync(string authority, bool? isSuccess, System.Threading.CancellationToken cancellationToken);
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -2511,15 +2520,15 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<FilterOrderDto> OrdersAsync(long? userId, int? minimumPrice, string userName, string destinationCity, long? transactionId, long? paymentRecordId, FilterOrderState? filterOrderState, System.Collections.Generic.IEnumerable<AdminOrderListItemDto> data)
+        public virtual System.Threading.Tasks.Task<FilterOrderDto> OrdersAsync(long? userId, int? minimumPrice, string userName, string destinationCity, long? transactionId, long? paymentRecordId, FilterOrderState? filterOrderState, System.Collections.Generic.IEnumerable<AdminOrderListItemDto> data, string transactionCode)
         {
-            return OrdersAsync(userId, minimumPrice, userName, destinationCity, transactionId, paymentRecordId, filterOrderState, data, System.Threading.CancellationToken.None);
+            return OrdersAsync(userId, minimumPrice, userName, destinationCity, transactionId, paymentRecordId, filterOrderState, data, transactionCode, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FilterOrderDto> OrdersAsync(long? userId, int? minimumPrice, string userName, string destinationCity, long? transactionId, long? paymentRecordId, FilterOrderState? filterOrderState, System.Collections.Generic.IEnumerable<AdminOrderListItemDto> data, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<FilterOrderDto> OrdersAsync(long? userId, int? minimumPrice, string userName, string destinationCity, long? transactionId, long? paymentRecordId, FilterOrderState? filterOrderState, System.Collections.Generic.IEnumerable<AdminOrderListItemDto> data, string transactionCode, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2566,6 +2575,10 @@ namespace UI.Services.Base
                     if (data != null)
                     {
                             foreach (var item_ in data) { urlBuilder_.Append(System.Uri.EscapeDataString("Data")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append('&'); }
+                    }
+                    if (transactionCode != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("TransactionCode")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(transactionCode, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
                     urlBuilder_.Length--;
 
@@ -2874,7 +2887,91 @@ namespace UI.Services.Base
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<bool> PayOrderCallbackAsync(string authority, bool? isSuccess)
+        public virtual System.Threading.Tasks.Task<WalletPaymentStatusDto> WalletStatusAsync(System.Guid? paymentId)
+        {
+            return WalletStatusAsync(paymentId, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<WalletPaymentStatusDto> WalletStatusAsync(System.Guid? paymentId, System.Threading.CancellationToken cancellationToken)
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "api/payments/wallet-status"
+                    urlBuilder_.Append("api/payments/wallet-status");
+                    urlBuilder_.Append('?');
+                    if (paymentId != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("paymentId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(paymentId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<WalletPaymentStatusDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<PayOrderResponseDto> PayOrderCallbackAsync(string authority, bool? isSuccess)
         {
             return PayOrderCallbackAsync(authority, isSuccess, System.Threading.CancellationToken.None);
         }
@@ -2882,7 +2979,7 @@ namespace UI.Services.Base
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<bool> PayOrderCallbackAsync(string authority, bool? isSuccess, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PayOrderResponseDto> PayOrderCallbackAsync(string authority, bool? isSuccess, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2934,7 +3031,7 @@ namespace UI.Services.Base
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<bool>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<PayOrderResponseDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -4502,6 +4599,9 @@ namespace UI.Services.Base
         [Newtonsoft.Json.JsonProperty("transactionId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public long? TransactionId { get; set; }
 
+        [Newtonsoft.Json.JsonProperty("transactionCode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TransactionCode { get; set; }
+
         [Newtonsoft.Json.JsonProperty("paymentTransactionId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public long? PaymentTransactionId { get; set; }
 
@@ -4935,6 +5035,9 @@ namespace UI.Services.Base
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<AdminOrderListItemDto> Data { get; set; }
 
+        [Newtonsoft.Json.JsonProperty("transactionCode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TransactionCode { get; set; }
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -5319,6 +5422,12 @@ namespace UI.Services.Base
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class PayOrderResponseDto
     {
+
+        [Newtonsoft.Json.JsonProperty("pending", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool Pending { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("paymentId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? PaymentId { get; set; }
 
         [Newtonsoft.Json.JsonProperty("walletPayment", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool WalletPayment { get; set; }
@@ -5804,6 +5913,18 @@ namespace UI.Services.Base
 
         [Newtonsoft.Json.JsonProperty("colorCode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string ColorCode { get; set; }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class WalletPaymentStatusDto
+    {
+
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Status { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Message { get; set; }
 
     }
 

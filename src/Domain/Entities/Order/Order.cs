@@ -18,9 +18,9 @@ namespace Domain.Entities.Order
         public string? PostTraceCode { get; set; }
         public long? TransactionId { get; set; }
 
-        // public long? PaymentTransactionId { get; set; }
+        // کد یکپارچه‌ی پیگیری: برای پرداخت آنلاین = Authority بانک، برای کیف‌پول = "WALLET-{Guid}"
+        public string? TransactionCode { get; set; }
 
-        // [ForeignKey(nameof(PaymentTransactionId))]
         public virtual PaymentTransaction? PaymentTransaction { get; set; }
 
         public DateTime? PaymentDate { get; set; }

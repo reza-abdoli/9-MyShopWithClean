@@ -1,0 +1,87 @@
+@model Guid
+@{
+    ViewData["Title"] = "پیگیری پرداخت";
+    Layout = "_UserLayout";
+}
+
+<div class="container py-5" style="max-width:560px">
+    <div class="bg-white rounded-4 border shadow-sm p-5 text-center">
+
+        <div id="processing">
+            <div class="spinner-border text-danger mb-4" role="status" style="width:3rem;height:3rem"></div>
+            <h6 class="fw-bold mb-2">در حال پردازش پرداخت شما...</h6>
+            <p class="text-muted font-13 mb-0">لطفاً این صفحه را نبندید.</p>
+        </div>
+
+        <div id="succeeded" class="d-none">
+            <i class="bi bi-check-circle-fill text-success" style="font-size:3.5rem"></i>
+            <h6 class="fw-bold mt-3">پرداخت با موفقیت انجام شد</h6>
+            <p class="text-muted font-13">در حال انتقال به سفارش‌های شما...</p>
+        </div>
+
+        <div id="failed" class="d-none">
+            <i class="bi bi-x-circle-fill text-danger" style="font-size:3.5rem"></i>
+            <h6 class="fw-bold mt-3">پرداخت انجام نشد</h6>
+            <p id="failedMessage" class="text-muted font-13"></p>
+            <a href="@Url.Action("Cart", "Order", new { area = "User" })" class="btn btn-danger btn-sm px-4">
+                بازگشت به سبد خرید
+            </a>
+        </div>
+
+        <div id="slow" class="d-none">
+            <i class="bi bi-hourglass-split text-warning" style="font-size:3.5rem"></i>
+            <h6 class="fw-bold mt-3">پردازش بیشتر از حد معمول طول کشیده</h6>
+            <p class="text-muted font-13">
+                نتیجه‌ی نهایی با پیامک به شما اعلام می‌شود. می‌توانید وضعیت را از «سفارش‌های من» هم ببینید.
+            </p>
+            <a href="@Url.Action("PaidOrders", "Order", new { area = "User" })" class="btn btn-outline-danger btn-sm px-4">
+                سفارش‌های من
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const statusUrl = '@Html.Raw(Url.Action("WalletPaymentStatusJson", "Payment", new { area = "User", paymentId = Model }))';
+    const paidOrdersUrl = '@Html.Raw(Url.Action("PaidOrders", "Order", new { area = "User" }))';
+
+    const maxAttempts = 60;   // حدود یک دقیقه
+    let attempts = 0;
+
+    function show(id) {
+        ['processing', 'succeeded', 'failed', 'slow'].forEach(function (x) {
+            document.getElementById(x).classList.toggle('d-none', x !== id);
+        });
+    }
+
+    async function poll() {
+        attempts++;
+        try {
+            const res = await fetch(statusUrl, { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
+            if (res.ok) {
+                const data = await res.json();
+
+                if (data.status === 'Succeeded') {
+                    show('succeeded');
+                    setTimeout(function () { window.location.href = paidOrdersUrl; }, 1500);
+                    return;
+                }
+                if (data.status === 'Failed') {
+                    document.getElementById('failedMessage').textContent = data.message || 'پرداخت ناموفق بود.';
+                    show('failed');
+                    return;
+                }
+            }
+        } catch (e) {
+            // قطعی کوتاه شبکه؛ بی‌صدا دوباره تلاش می‌کنیم
+        }
+
+        if (attempts >= maxAttempts) { show('slow'); return; }
+
+        // ۱۰ تلاش اول هر ۱ ثانیه، بعدش هر ۲ ثانیه تا فشار روی سرور کم بشه
+        setTimeout(poll, attempts < 10 ? 1000 : 2000);
+    }
+
+    poll();
+</script>

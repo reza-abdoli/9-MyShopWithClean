@@ -21,11 +21,16 @@ public class PaymentController : UserBaseController
 
             if (response.WalletPayment)
             {
+                // نتیجه‌ی قطعی و سریع
                 if (response.Success)
                 {
                     TempData[SuccessMessage] = "پرداخت شما با موفقیت انجام شد.";
                     return RedirectToAction("PaidOrders", "Order", new { area = "User" });
                 }
+
+                // نتیجه هنوز نامعلومه → صفحه‌ی پیگیری
+                if (response.Pending && response.PaymentId.HasValue)
+                    return RedirectToAction("WalletPaymentStatus", new { paymentId = response.PaymentId.Value });
 
                 TempData[ErrorMessage] = ErrorText;
                 return RedirectToAction("Cart", "Order", new { area = "User" });
@@ -52,18 +57,42 @@ public class PaymentController : UserBaseController
         }
     }
 
+    // ---- صفحه‌ی پیگیری پرداخت کیف‌پول ----
+    [HttpGet("wallet-payment-status/{paymentId:guid}")]
+    public IActionResult WalletPaymentStatus(Guid paymentId)
+    {
+        return View(paymentId);
+    }
+
+    // JSON برای Polling. مرورگر مستقیم به Api وصل نمی‌شه (توکن JWT سمت سرور UI نگه‌داری می‌شه)
+    [HttpGet("wallet-payment-status-json/{paymentId:guid}")]
+    public async Task<IActionResult> WalletPaymentStatusJson(Guid paymentId)
+    {
+        try
+        {
+            var status = await _client.WalletStatusAsync(paymentId);
+            return Json(new { status = status.Status, message = status.Message });
+        }
+        catch (ApiException)
+        {
+            return StatusCode(502);   // مشکل موقت؛ صفحه دوباره تلاش می‌کنه
+        }
+    }
     [HttpPost("pay-order-callback")]
     public async Task<IActionResult> PayOrderCallback(string authority, bool isSuccess)
     {
         try
         {
-            var finalized = await _client.PayOrderCallbackAsync(authority, isSuccess);
+            var response = await _client.PayOrderCallbackAsync(authority, isSuccess);
 
-            if (finalized)
+            if (response.Success)
             {
                 TempData[SuccessMessage] = "پرداخت شما با موفقیت انجام شد.";
                 return RedirectToAction("PaidOrders", "Order", new { area = "User" });
             }
+
+            if (response.Pending && response.PaymentId.HasValue)
+                return RedirectToAction("WalletPaymentStatus", new { paymentId = response.PaymentId.Value });
 
             TempData[ErrorMessage] = ErrorText;
             return RedirectToAction("Cart", "Order", new { area = "User" });
@@ -108,19 +137,8 @@ public class PaymentController : UserBaseController
         }
         catch (ApiException ex)
         {
-            string userMessage;
-            try
-            {
-                var json = System.Text.Json.JsonDocument.Parse(ex.Response);
-                userMessage = json.RootElement.GetProperty("message").GetString();
-            }
-            catch
-            {
-                userMessage = "خطایی در پردازش پرداخت رخ داد.";
-            }
-
-            TempData[ErrorMessage] = userMessage;
-            return RedirectToAction("Cart", "Order", new { area = "User" });
+            TempData[ErrorMessage] = ex.Message;
+            return RedirectToAction("Index", "Home", new { area = "" });
         }
     }
 
@@ -136,20 +154,9 @@ public class PaymentController : UserBaseController
         }
         catch (ApiException ex)
         {
-            string userMessage;
-            try
-            {
-                var json = System.Text.Json.JsonDocument.Parse(ex.Response);
-                userMessage = json.RootElement.GetProperty("message").GetString();
-            }
-            catch
-            {
-                userMessage = "خطایی در پردازش پرداخت رخ داد.";
-            }
-
-            TempData[ErrorMessage] = userMessage;
+            TempData[ErrorMessage] = ex.Message;
         }
-        return RedirectToAction("Cart", "Order", new { area = "User" });
 
+        return RedirectToAction("Index", "Home", new { area = "" });
     }
 }

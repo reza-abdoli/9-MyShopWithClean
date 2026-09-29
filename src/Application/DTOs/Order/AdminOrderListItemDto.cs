@@ -18,6 +18,7 @@ namespace Application.DTOs.Order
         public string? Description { get; set; }
         public string? PostTraceCode { get; set; }
         public long? TransactionId { get; set; }
+        public string? TransactionCode { get; set; }   // ← جدید
         public long? PaymentTransactionId { get; set; }
         public DateTime? PaymentDate { get; set; }
         public OrderState OrderState { get; set; }

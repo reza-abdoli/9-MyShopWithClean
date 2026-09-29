@@ -18,6 +18,8 @@ using Wolverine.Kafka;
 using Wolverine.SqlServer;
 using KafkaContracts;
 using Application.Features.Orders;
+using KafkaContracts.Payments;
+using JasperFx;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,7 @@ builder.Host.UseWolverine(opts =>
 
     opts.UseEntityFrameworkCoreTransactions();
 
+    opts.AutoBuildMessageStorageOnStartup = AutoCreate.None;
     // اتصال به Kafka
     opts.UseKafka(kafkaAddress).AutoProvision();
 
@@ -44,10 +47,18 @@ builder.Host.UseWolverine(opts =>
     opts.PublishMessage<SendSmsCommand>()
         .ToKafkaTopic(Topics.Sms)
         .UseDurableOutbox();
+
+    opts.ListenToKafkaTopic(Topics.PaymentEvents).ProcessInline();
+
+    opts.PublishMessage<RegisterPaymentCommand>().ToKafkaTopic(Topics.PaymentCommands).UseDurableOutbox();
+    opts.PublishMessage<VoidPaymentCommand>().ToKafkaTopic(Topics.PaymentCommands).UseDurableOutbox();
+
+    opts.PublishMessage<CreateOnlinePendingPaymentCommand>().ToKafkaTopic(Topics.PaymentCommands).UseDurableOutbox();
+    opts.PublishMessage<MarkOnlinePaymentResultCommand>().ToKafkaTopic(Topics.PaymentCommands).UseDurableOutbox();
 });
 
 // جدول‌های schema به اسم wolverine رو موقع استارت می‌سازه
-builder.Services.AddResourceSetupOnStartup();
+// builder.Services.AddResourceSetupOnStartup();
 
 // -------------------- Controllers --------------------
 builder.Services.AddControllers()
@@ -64,7 +75,7 @@ builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddFileStorageServices();
 // builder.Services.AddScoped<OnlinePaymentRefunder>();      // جدید
 builder.Services.AddScoped<IOrderHelper, OrderHelper>();
-builder.Services.AddScoped<IOnlinePaymentRefunder, OnlinePaymentRefunder>();
+// builder.Services.AddScoped<IOnlinePaymentRefunder, OnlinePaymentRefunder>();
 // -------------------- JWT Authentication --------------------
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();

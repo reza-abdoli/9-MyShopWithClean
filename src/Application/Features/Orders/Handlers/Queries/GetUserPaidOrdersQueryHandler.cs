@@ -32,7 +32,7 @@ public class GetUserPaidOrdersQueryHandler
                 TotalPrice = o.TotalPrice,
                 Description = o.Description,
                 PostTraceCode = o.PostTraceCode,
-                BankTraceCode = o.TransactionId.HasValue ? o.TransactionId.ToString() : string.Empty,
+                BankTraceCode = o.TransactionCode ?? string.Empty,   // ← تغییر اینجا
                 PaymentDate = o.PaymentDate,
                 OrderState = o.OrderState,
                 OrderDetails = o.OrderDetails.Select(d => new OrderItemDto

@@ -14,6 +14,7 @@ namespace Application.DTOs.Order
         public long? PaymentRecordId { get; set; }
         public FilterOrderState FilterOrderState { get; set; }
         public List<AdminOrderListItemDto>? Data { get; set; }
+        public string? TransactionCode { get; set; } 
     }
 
     public enum FilterOrderState

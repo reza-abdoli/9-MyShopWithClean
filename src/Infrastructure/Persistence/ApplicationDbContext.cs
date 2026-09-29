@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Features.Payments;
 using Domain.Entities;
 using Domain.Entities.Common;
 using Domain.Entities.Order;
@@ -34,6 +35,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<OrderDetail> OrderDetail { get; set; }
     public DbSet<ProductSell> ProductSell { get; set; }
     public DbSet<PaymentTransaction> PaymentTransaction { get; set; }
+    public DbSet<OrderPaymentSaga> OrderPaymentSagas { get; set; }
+    public DbSet<WalletPaymentAttempt> WalletPaymentAttempts { get; set; }
+    public DbSet<OnlineOrderPaymentSaga> OnlineOrderPaymentSagas { get; set; }
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         foreach (var entry in ChangeTracker.Entries<BaseEntity>())
@@ -77,6 +81,12 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<User>()
             .Property(x => x.RowVersion)
             .IsRowVersion();
+
+        modelBuilder.Entity<OrderPaymentSaga>().HasKey(s => s.Id);
+
+        modelBuilder.Entity<WalletPaymentAttempt>().HasIndex(a => a.PaymentId).IsUnique();
+
+        modelBuilder.Entity<OnlineOrderPaymentSaga>().HasKey(s => s.Id);
 
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
         modelBuilder.Entity<Brand>().HasQueryFilter(b => !b.IsDeleted);

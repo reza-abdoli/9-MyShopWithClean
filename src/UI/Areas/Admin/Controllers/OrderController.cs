@@ -16,8 +16,15 @@ public class OrderController : AdminBaseController
     public async Task<IActionResult> FilterOrder(FilterOrderDto filter)
     {
         var model = await _client.OrdersAsync(
-            filter.UserId, filter.MinimumPrice, filter.UserName, filter.DestinationCity,
-            filter.TransactionId, filter.PaymentRecordId, filter.FilterOrderState, filter.Data);
+            userId: filter.UserId,
+            minimumPrice: filter.MinimumPrice,
+            userName: filter.UserName,
+            destinationCity: filter.DestinationCity,
+            transactionId: filter.TransactionId,
+            paymentRecordId: filter.PaymentRecordId,
+            transactionCode: filter.TransactionCode,
+            filterOrderState: filter.FilterOrderState,
+            data: filter.Data);
         return View(model);
     }
 
